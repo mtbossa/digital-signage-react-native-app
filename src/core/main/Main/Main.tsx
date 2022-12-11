@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { Text, StyleSheet, View } from "react-native";
-import { AppContext } from "../../contexts/AppContext";
-import { colors } from "../../styles/Colors";
-import { Login } from "../auth/components";
-import { Loading } from "../general/Loading";
+import { AppContext } from "../../../contexts/AppContext";
+import { colors } from "../../../styles/Colors";
+import { Login } from "../../auth/components/Login";
+import { Loading } from "../../general/Loading";
 
 function Main() {
 	const { isLoading, isAuth } = useContext(AppContext);
