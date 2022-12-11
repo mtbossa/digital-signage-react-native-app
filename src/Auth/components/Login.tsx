@@ -3,18 +3,18 @@ import React, { useContext, useState } from "react";
 import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from "react-native";
 import { AppContext } from "../../contexts/AppContext";
 import { StorageKeys } from "../../database/AsyncStorage/StorageKeys";
+import { useStorage } from "../hooks/useStorage";
 
 function Login() {
 	const [token, setToken] = useState("");
 
-	const { setIsLoading, setIsAuth } = useContext(AppContext);
+	const { setIsAuth } = useContext(AppContext);
+	const { setItem } = useStorage();
 
 	const storeData = async (_: GestureResponderEvent) => {
 		try {
-			setIsLoading(true);
-			await AsyncStorage.setItem(StorageKeys.API_TOKEN, token);
+			await setItem(StorageKeys.API_TOKEN, token);
 			setIsAuth(true);
-			setIsLoading(false);
 		} catch (e) {
 			console.log("Error while saving api token");
 		}
