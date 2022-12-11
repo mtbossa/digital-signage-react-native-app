@@ -6,8 +6,7 @@ import { Loading } from "../general/Loading";
 import { colors } from "../styles/Colors";
 
 function Main() {
-	const [isAuth, setIsAuth] = useState(false);
-	const { isLoading } = useContext(AppContext);
+	const { isLoading, isAuth } = useContext(AppContext);
 
 	console.log(isLoading);
 	return (
@@ -15,7 +14,9 @@ function Main() {
 			{isLoading ? (
 				<Loading />
 			) : (
-				<View>{isAuth ? <Text>Already authenticated</Text> : <Login />}</View>
+				<View>
+					{isAuth ? <Text style={{ color: "white" }}>Already authenticated</Text> : <Login />}
+				</View>
 			)}
 		</View>
 	);
