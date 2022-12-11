@@ -1,7 +1,9 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { Text, StyleSheet, View, Button } from "react-native";
 import { Login } from "../Auth/components";
 import { AppContext } from "../contexts/AppContext";
+import { StorageKeys } from "../database/AsyncStorage/StorageKeys";
 import { Loading } from "../general/Loading";
 import { colors } from "../styles/Colors";
 
@@ -14,7 +16,13 @@ function Main() {
 				<Loading />
 			) : (
 				<View>
-					{isAuth ? <Text style={{ color: "white" }}>Already authenticated</Text> : <Login />}
+					{isAuth ? (
+						<View>
+							<Text style={{ color: "white" }}>Already authenticated</Text>
+						</View>
+					) : (
+						<Login />
+					)}
 				</View>
 			)}
 		</View>
