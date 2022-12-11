@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import { Login } from "../Auth/components";
 import { AppContext } from "../contexts/AppContext";
+import { Loading } from "../general/Loading";
 import { colors } from "../styles/Colors";
 
 function Main() {
@@ -12,7 +13,7 @@ function Main() {
 	return (
 		<View style={style.container}>
 			{isLoading ? (
-				<Text style={{ color: "white" }}>Loading</Text>
+				<Loading />
 			) : (
 				<View>{isAuth ? <Text>Already authenticated</Text> : <Login />}</View>
 			)}
