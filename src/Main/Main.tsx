@@ -8,7 +8,6 @@ import { colors } from "../styles/Colors";
 function Main() {
 	const { isLoading, isAuth } = useContext(AppContext);
 
-	console.log(isLoading);
 	return (
 		<View style={style.container}>
 			{isLoading ? (
