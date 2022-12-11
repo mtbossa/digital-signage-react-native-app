@@ -1,18 +1,37 @@
-import React from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState } from "react";
+import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from "react-native";
+import { StorageKeys } from "../../database/AsyncStorage/StorageKeys";
 
 function Login() {
+	const [token, setToken] = useState("");
+
+	const storeData = async (_: GestureResponderEvent) => {
+		try {
+			await AsyncStorage.setItem(StorageKeys.API_TOKEN, token);
+
+			console.log(await AsyncStorage.getItem(StorageKeys.API_TOKEN));
+
+			await AsyncStorage.removeItem(StorageKeys.API_TOKEN);
+
+			console.log(await AsyncStorage.getItem(StorageKeys.API_TOKEN));
+		} catch (e) {
+			console.log("Error while saving api token");
+		}
+	};
+
 	return (
 		<View style={style.container}>
 			<View style={style.loginCard}>
 				<Text style={[style.label, style.textWhite]}>Insira o token recebido</Text>
 				<TextInput
 					style={[style.input, style.textWhite]}
-					placeholder="Token"
 					placeholderTextColor={"grey"}
+					placeholder="Token"
+					onChangeText={text => setToken(text)}
 				/>
 				<View style={style.loginButtonWrapper}>
-					<Button title="Login"></Button>
+					<Button onPress={storeData} title="Login"></Button>
 				</View>
 			</View>
 		</View>
