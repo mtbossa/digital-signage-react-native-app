@@ -1,11 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useContext, useState } from "react";
-import { Text, StyleSheet, View, Button } from "react-native";
-import { Login } from "../Auth/components";
-import { AppContext } from "../contexts/AppContext";
-import { StorageKeys } from "../database/AsyncStorage/StorageKeys";
+import React, { useContext } from "react";
+import { Text, StyleSheet, View } from "react-native";
+import { AppContext } from "../../contexts/AppContext";
+import { colors } from "../../styles/Colors";
+import { Login } from "../auth/components";
 import { Loading } from "../general/Loading";
-import { colors } from "../styles/Colors";
 
 function Main() {
 	const { isLoading, isAuth } = useContext(AppContext);
