@@ -40,12 +40,11 @@ function Login() {
 
 const style = StyleSheet.create({
 	container: {
-		justifyContent: "center",
-		alignItems: "center",
+		height: "100%",
 		borderWidth: 1,
 		borderColor: "red",
-		height: "100%",
-		width: "100%",
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	loginCard: {
 		borderWidth: 1,

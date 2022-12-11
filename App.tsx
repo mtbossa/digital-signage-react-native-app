@@ -1,18 +1,13 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Button, Text } from "react-native";
-import { Video, AVPlaybackStatus, AVPlaybackStatusSuccess, ResizeMode } from "expo-av";
-import { Login } from "./src/Auth/components";
+import React from "react";
+import { StyleSheet } from "react-native";
 import { colors } from "./src/styles/Colors";
+import AppProvider from "./src/contexts/AppContext";
+import { Main } from "./src/Main";
 
 export default function App() {
-	const [isAuth, setIsAuth] = useState(false);
 	return (
-		<View style={style.container}>{isAuth ? <Text>Already authenticated</Text> : <Login />}</View>
+		<AppProvider>
+			<Main />
+		</AppProvider>
 	);
 }
-
-const style = StyleSheet.create({
-	container: {
-		backgroundColor: colors.backgroundColor,
-	},
-});
