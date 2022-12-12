@@ -6,11 +6,12 @@ module.exports = function (api) {
 			[
 				"module-resolver",
 				{
+					root: ["./src"],
 					alias: {
-						"intus-core": "./src/core",
-						"intus-contexts": "./src/contexts",
-						"intus-database": "./src/database",
-						"intus-styles": "./src/styles",
+						"intus-core": "/core",
+						"intus-contexts": "/contexts",
+						"intus-database": "/database",
+						"intus-styles": "/styles",
 					},
 				},
 			],
