@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from "react-native";
-import { AppContext } from "../../../../contexts/AppContext";
-import { StorageKeys } from "../../../../database/AsyncStorage/StorageKeys";
-import { useStorage } from "../../hooks/useStorage";
+
+import { AppContext } from "intus-contexts/AppContext";
+import { useStorage } from "intus-database/AsyncStorage/hooks/useStorage";
+import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 
 function Login() {
 	const [token, setToken] = useState("");

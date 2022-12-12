@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { Text, StyleSheet, View } from "react-native";
 
-import { Login } from "@intus/core/auth/components/Login";
-import { AppContext } from "@intus/contexts/AppContext";
-import { Loading } from "@intus/core/general/Loading";
-import { colors } from "@intus/styles/Colors";
+import { AppContext } from "intus-contexts/AppContext";
+import { Login } from "intus-core/auth/components/Login";
+import { Loading } from "intus-core/general/Loading";
+import { colors } from "intus-styles/Colors";
 
 function Main() {
 	const { isLoading, isAuth } = useContext(AppContext);

@@ -1,7 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext } from "react";
-import { AppContext } from "../../../contexts/AppContext";
-import { StorageKeys } from "../../../database/AsyncStorage/StorageKeys";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { AppContext } from "intus-contexts/AppContext";
+import { StorageKeys } from "../StorageKeys";
 
 export const useStorage = () => {
 	const { setIsLoading } = useContext(AppContext);
