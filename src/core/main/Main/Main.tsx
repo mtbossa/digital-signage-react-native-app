@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Text, StyleSheet, View } from "react-native";
 
-import { AppContext } from "intus-contexts/AppContext";
+import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { Login } from "intus-core/auth/components/Login";
 import { Loading } from "intus-core/shared/Loading";
 import { colors } from "intus-styles/Colors";

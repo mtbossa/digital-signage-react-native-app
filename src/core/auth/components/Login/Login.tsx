@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { AppContext } from "intus-contexts/AppContext";
+import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useStorage } from "intus-database/AsyncStorage/hooks/useStorage";
 import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 

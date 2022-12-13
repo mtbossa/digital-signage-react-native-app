@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { AppContext } from "intus-contexts/AppContext";
+import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { StorageKeys } from "../StorageKeys";
 
 export const useStorage = () => {

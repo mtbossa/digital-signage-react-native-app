@@ -5,7 +5,7 @@
     "strict": true,
     "paths": {
       "intus-core/*": ["./src/core/*"],
-      "intus-contexts/*": ["./src/contexts/*"],
+      "intus-contexts/*": ["src/core/shared/contexts/*"],
       "intus-database/*": ["./src/database/*"],
       "intus-styles/*": ["./src/styles/*"]
     }
