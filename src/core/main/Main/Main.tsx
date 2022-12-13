@@ -3,7 +3,7 @@ import { Text, StyleSheet, View } from "react-native";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { Login } from "intus-core/auth/components/Login";
-import { Loading } from "intus-core/shared/Loading";
+import { Loading } from "intus-core/shared/components/Loading";
 import { colors } from "intus-styles/Colors";
 
 function Main() {
