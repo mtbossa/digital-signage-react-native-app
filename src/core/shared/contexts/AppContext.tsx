@@ -11,7 +11,7 @@ export const AppContext = createContext({} as AppContextValue);
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
 	const [isLoading, setIsLoading] = useState(false);
-	const [isAuth, setIsAuth] = useState(false);
+	const [isAuth, setIsAuth] = useState(true);
 
 	return (
 		<AppContext.Provider value={{ isLoading, setIsLoading, isAuth, setIsAuth }}>
