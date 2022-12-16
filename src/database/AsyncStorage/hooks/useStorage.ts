@@ -12,8 +12,17 @@ export const useStorage = () => {
 		await AsyncStorage.setItem(key, value);
 		setIsLoading(false);
 	};
+	
+	const getItem = async (key: StorageKeys) => {
+		setIsLoading(true);
+		const item = await AsyncStorage.getItem(key);
+		setIsLoading(false);
+		
+		return item;
+	};
 
 	return {
 		setItem,
+		getItem
 	};
 };
