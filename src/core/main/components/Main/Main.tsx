@@ -11,7 +11,7 @@ import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import { Carousel } from "../Carousel";
 
 function Main() {
-	const { isLoading, isAuth, setIsAuth } = useContext(AppContext);
+	const { isAuth, setIsAuth } = useContext(AppContext);
 
 	const { isAuth: getIsAuth } = useAuth();
 
@@ -24,7 +24,7 @@ function Main() {
 
 	return (
 		<View style={style.container}>
-			{isLoading ? <Loading /> : <View>{isAuth ? <Carousel /> : <Login />}</View>}
+			<View>{isAuth ? <Carousel /> : <Login />}</View>
 			<Button
 				onPress={async () => {
 					await AsyncStorage.removeItem(StorageKeys.API_TOKEN);
