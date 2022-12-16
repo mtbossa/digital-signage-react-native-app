@@ -1,6 +1,6 @@
 import React from "react";
 import AppProvider from "./src/core/shared/contexts/AppContext";
-import { Main } from "./src/core/main/Main";
+import { Main } from "./src/core/main/components/Main";
 
 export default function App() {
 	return (
