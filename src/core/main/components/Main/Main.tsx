@@ -8,7 +8,7 @@ import { Loading } from "intus-core/shared/components/Loading";
 import { colors } from "intus-styles/Colors";
 import { useAuth } from "intus-core/auth/hooks/useAuth";
 import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Carousel } from "../Carousel";
 
 function Main() {
 	const { isLoading, isAuth, setIsAuth } = useContext(AppContext);
@@ -24,19 +24,7 @@ function Main() {
 
 	return (
 		<View style={style.container}>
-			{isLoading ? (
-				<Loading />
-			) : (
-				<View>
-					{isAuth ? (
-						<View>
-							<Text style={{ color: "white" }}>Already authenticated</Text>
-						</View>
-					) : (
-						<Login />
-					)}
-				</View>
-			)}
+			{isLoading ? <Loading /> : <View>{isAuth ? <Carousel /> : <Login />}</View>}
 			<Button
 				onPress={async () => {
 					await AsyncStorage.removeItem(StorageKeys.API_TOKEN);
