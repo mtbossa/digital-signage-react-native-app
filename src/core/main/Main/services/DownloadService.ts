@@ -10,7 +10,6 @@ export const downloadHandler = async (filename: string) => {
 	const MAX_TRIES = 3;
 
 	let tries = 1;
-	let downloadSucess = false;
 
 	const downloadResumable = FileSystem.createDownloadResumable(
 		DOWNLOAD_URL,
@@ -21,25 +20,16 @@ export const downloadHandler = async (filename: string) => {
 		}
 	);
 
-	while (!downloadSucess && tries <= MAX_TRIES) {
+	while (tries <= MAX_TRIES) {
 		try {
-			console.log("Trying to download video in try: ", tries);
 			tries = tries + 1;
 
 			const download = await downloadResumable.downloadAsync();
 
 			if (!isStatusCodeOk(download)) {
-				try {
-					console.log("Deleting file because status code is not 200");
-					// We try to delete the file if the status code is not 200
-					await FileSystem.deleteAsync(DOWNLOAD_PATH);
-				} catch {
-					// We don't have to do anything here
-				}
+				// We try to delete the file if the status code is not 200
+				await FileSystem.deleteAsync(DOWNLOAD_PATH, { idempotent: true });
 			} else {
-				console.log("Finished downloading to ", download?.uri);
-				// downloadSucess = true;
-
 				return download;
 			}
 		} catch (e) {}
