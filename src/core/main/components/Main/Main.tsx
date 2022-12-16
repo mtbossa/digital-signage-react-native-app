@@ -11,7 +11,7 @@ import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import { Carousel } from "../Carousel";
 
 function Main() {
-	const { isAuth, setIsAuth } = useContext(AppContext);
+	const { isAuth, setIsAuth, isLoading, setIsLoading } = useContext(AppContext);
 
 	const { isAuth: getIsAuth } = useAuth();
 
@@ -19,11 +19,13 @@ function Main() {
 		(async () => {
 			const isAlreadyAuth = await getIsAuth();
 			isAlreadyAuth && setIsAuth(true);
+			setIsLoading(false);
 		})();
 	}, []);
 
 	return (
 		<View style={style.container}>
+			{isLoading && <Loading />}
 			<View>{isAuth ? <Carousel /> : <Login />}</View>
 			<Button
 				onPress={async () => {
@@ -41,6 +43,13 @@ const style = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 		backgroundColor: colors.backgroundColor,
+	},
+	loader: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
 	},
 });
 
