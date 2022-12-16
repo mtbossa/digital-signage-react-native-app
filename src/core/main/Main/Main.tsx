@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Text, StyleSheet, View, Button } from "react-native";
 import { Video } from "expo-av";
 import * as FileSystem from "expo-file-system";
@@ -7,37 +7,19 @@ import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { Login } from "intus-core/auth/components/Login";
 import { Loading } from "intus-core/shared/components/Loading";
 import { colors } from "intus-styles/Colors";
-import { downloadHandler, DOWNLOAD_PATH, FILENAME } from "./services/DownloadService";
+import { useAuth } from "intus-core/auth/hooks/useAuth";
 
 function Main() {
-	const { isLoading, isAuth } = useContext(AppContext);
+	const { isLoading, isAuth, setIsAuth } = useContext(AppContext);
 
-	const [showVideo, setShowVideo] = useState(false);
-	const [mediaDownloaded, setMediaDownloaded] = useState(false);
+	const { isAuth: getIsAuth } = useAuth();
 
-	const downloadVideo = async () => {
-		try {
-			const download = await downloadHandler(FILENAME);
-			console.log("Donwload sucesseful: ", download);
-			setMediaDownloaded(true);
-		} catch (e) {
-			console.log("Errer inside downloadVideo: ", e);
-		}
-	};
-
-	const showVideoCallback = async () => {
-		setShowVideo(showVideo => !showVideo);
-	};
-
-	const deleteVideo = async () => {
-		try {
-			await FileSystem.deleteAsync(DOWNLOAD_PATH);
-			console.log("Media deleted");
-			setMediaDownloaded(false);
-		} catch (e) {
-			console.error(e);
-		}
-	};
+	useEffect(() => {
+		(async () => {
+			const isAlreadyAuth = await getIsAuth();
+			isAlreadyAuth && setIsAuth(true);
+		})();
+	}, []);
 
 	return (
 		<View style={style.container}>
@@ -48,29 +30,6 @@ function Main() {
 					{isAuth ? (
 						<View>
 							<Text style={{ color: "white" }}>Already authenticated</Text>
-							<Button onPress={downloadVideo} title="Download video" />
-							<Button onPress={showVideoCallback} title="Show video" />
-							<Button onPress={deleteVideo} title="Delete video" />
-
-							<Text style={{ color: "white" }}>Showing video: {showVideo ? "true" : "false"}</Text>
-							<Text style={{ color: "white" }}>
-								Media downloaded: {mediaDownloaded ? "true" : "false"}
-							</Text>
-							{showVideo && (
-								<>
-									<Video
-										source={{
-											uri: DOWNLOAD_PATH,
-										}}
-										style={{
-											width: 500,
-											height: 500,
-										}}
-										isLooping
-										shouldPlay
-									/>
-								</>
-							)}
 						</View>
 					) : (
 						<Login />
