@@ -6,8 +6,8 @@ export const useAuth = () => {
 	const { getItem } = useStorage();
 
 	const isAuth = async () => {
-		const apiKey = getItem(StorageKeys.API_TOKEN);
-		return Boolean(apiKey);
+		const apiKey = await getItem(StorageKeys.API_TOKEN);
+		return typeof apiKey === "string";
 	};
 
 	return {

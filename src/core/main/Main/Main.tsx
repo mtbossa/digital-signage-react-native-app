@@ -8,6 +8,9 @@ import { Login } from "intus-core/auth/components/Login";
 import { Loading } from "intus-core/shared/components/Loading";
 import { colors } from "intus-styles/Colors";
 import { useAuth } from "intus-core/auth/hooks/useAuth";
+import { useStorage } from "intus-database/AsyncStorage/hooks/useStorage";
+import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Main() {
 	const { isLoading, isAuth, setIsAuth } = useContext(AppContext);
@@ -36,6 +39,13 @@ function Main() {
 					)}
 				</View>
 			)}
+			<Button
+				onPress={async () => {
+					await AsyncStorage.removeItem(StorageKeys.API_TOKEN);
+					setIsAuth(false);
+				}}
+				title="remove token"
+			/>
 		</View>
 	);
 }
