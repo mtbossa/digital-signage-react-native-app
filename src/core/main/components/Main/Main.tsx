@@ -1,14 +1,12 @@
 import React, { useContext, useEffect } from "react";
-import { Text, StyleSheet, View, Button } from "react-native";
-import { Video } from "expo-av";
-import * as FileSystem from "expo-file-system";
+import { StyleSheet, View, Button } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { Login } from "intus-core/auth/components/Login";
 import { Loading } from "intus-core/shared/components/Loading";
 import { colors } from "intus-styles/Colors";
 import { useAuth } from "intus-core/auth/hooks/useAuth";
-import { useStorage } from "intus-database/AsyncStorage/hooks/useStorage";
 import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
