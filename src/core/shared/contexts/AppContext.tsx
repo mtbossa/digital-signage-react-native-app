@@ -1,4 +1,5 @@
-import React, { createContext, ReactNode, useState } from "react";
+import { useAuth } from "intus-core/auth/hooks/useAuth";
+import React, { createContext, ReactNode, useState, useEffect } from "react";
 
 type AppContextValue = {
 	isLoading: boolean;
@@ -10,8 +11,8 @@ type AppContextValue = {
 export const AppContext = createContext({} as AppContextValue);
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
-	const [isLoading, setIsLoading] = useState(false);
-	const [isAuth, setIsAuth] = useState(true);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isAuth, setIsAuth] = useState(false);
 
 	return (
 		<AppContext.Provider value={{ isLoading, setIsLoading, isAuth, setIsAuth }}>
