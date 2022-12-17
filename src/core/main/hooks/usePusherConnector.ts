@@ -1,11 +1,6 @@
 import { Pusher } from "@pusher/pusher-websocket-react-native";
-import { axiosClient } from "intus-api/index";
 import { broadcastingAuthRequest } from "intus-api/requests/BroadcastingAuthRequest";
-import { BroadcastingAuthResponse } from "intus-api/responses/BroadcastingAuth";
-import {
-	getCurrentDisplayChannelName,
-	PrivateChannels,
-} from "intus-api/websockets/PrivateChannels";
+import { getCurrentDisplayChannelName } from "intus-api/websockets/PrivateChannels";
 
 const handleAuthorization = async (channelName: string, socketId: string) => {
 	try {
