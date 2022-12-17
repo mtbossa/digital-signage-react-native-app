@@ -2,6 +2,10 @@ import { Pusher } from "@pusher/pusher-websocket-react-native";
 import { axiosClient } from "intus-api/index";
 import { broadcastingAuthRequest } from "intus-api/requests/BroadcastingAuthRequest";
 import { BroadcastingAuthResponse } from "intus-api/responses/BroadcastingAuth";
+import {
+	getCurrentDisplayChannelName,
+	PrivateChannels,
+} from "intus-api/websockets/PrivateChannels";
 
 const handleAuthorization = async (channelName: string, socketId: string) => {
 	try {
@@ -37,9 +41,12 @@ export const usePusherConnector = () => {
 			});
 
 			await pusher.subscribe({
-				channelName: "private-App.Models.Raspberry.1",
-				onEvent(event) {
-					console.log("Recevied event", event);
+				channelName: getCurrentDisplayChannelName(),
+				onEvent: event => {
+					console.log("Received event", event);
+				},
+				onSubscriptionSucceeded: data => {
+					console.log("onSubscriptionSucceeded");
 				},
 			});
 
