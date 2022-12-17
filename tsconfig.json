@@ -7,7 +7,8 @@
       "intus-core/*": ["./src/core/*"],
       "intus-contexts/*": ["src/core/shared/contexts/*"],
       "intus-database/*": ["./src/database/*"],
-      "intus-styles/*": ["./src/styles/*"]
+      "intus-styles/*": ["./src/styles/*"],
+      "intus-api/*": ["./src/api/*"]
     }
   }
 }
