@@ -5,4 +5,5 @@ export const axiosClient = axios.create({
 	headers: {
 		Authorization: "Bearer yZE3gVNJMtiRshEq0OeJDYesfh9jophBEMU2ij7p",
 	},
+	timeout: 10000, // ms = 10s
 });
