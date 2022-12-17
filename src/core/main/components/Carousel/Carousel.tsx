@@ -3,9 +3,11 @@ import { Button, Text } from "react-native";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useSync } from "intus-core/main/hooks/useSync";
+import { usePusherConnector } from "intus-core/main/hooks/usePusherConnector";
 function Carousel() {
 	const { setIsLoading } = useContext(AppContext);
-	const { sync, connect, disconnect } = useSync();
+	const { sync } = useSync();
+	const { connect } = usePusherConnector();
 
 	useEffect(() => {
 		(async () => {
@@ -19,7 +21,6 @@ function Carousel() {
 		<>
 			<Text style={{ color: "white" }}>Carousel</Text>
 			<Button title="connect" onPress={connect} />
-			<Button title="disconnect" onPress={disconnect} />
 		</>
 	);
 }
