@@ -1,5 +1,8 @@
 import { Pusher, PusherEvent } from "@pusher/pusher-websocket-react-native";
 import { broadcastingAuthRequest } from "intus-api/requests/BroadcastingAuthRequest";
+import { Notification } from "intus-api/websockets/Notification";
+import { PostCreatedNotification } from "intus-api/websockets/notifications/PostCreated";
+import { PostDeletedNotification } from "intus-api/websockets/notifications/PostDeleted";
 import { getCurrentDisplayChannelName } from "intus-api/websockets/PrivateChannels";
 
 const handleAuthorization = async (channelName: string, socketId: string) => {
@@ -50,7 +53,15 @@ export const usePusherConnector = () => {
 	};
 
 	const handleEvent = (event: PusherEvent) => {
-		console.log(event);
+		const data = JSON.parse(event.data) as Notification;
+
+		if (data.type === "App\\Notifications\\DisplayPost\\PostCreated") {
+			const postCreated = data as PostCreatedNotification;
+		}
+
+		if (data.type === "App\\Notifications\\DisplayPost\\PostDeleted") {
+			const postDeleted = data as PostDeletedNotification;
+		}
 	};
 
 	return {
