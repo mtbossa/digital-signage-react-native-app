@@ -1,13 +1,15 @@
+import axios, { AxiosError } from "axios";
 import { axiosClient } from "intus-api/index";
+import { PostResponse } from "intus-api/responses/PostResponse";
 
 export const useSync = () => {
 	const sync = async () => {
 		try {
-			const tests = await axiosClient.get("api/raspberry/display/posts");
-			console.log(tests.data);
-		} catch (e) {
-			if (e instanceof Error)
-			console.error(e);
+			const { data: posts } = await axiosClient.get<PostResponse>("api/raspberry/display/posts");
+		} catch (err) {
+			if (axios.isAxiosError(err)) {
+				console.error("Could not sync with backend");
+			}
 		}
 
 		console.log("Sync is over");
