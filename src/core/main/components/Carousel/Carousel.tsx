@@ -1,11 +1,11 @@
 import React, { useEffect, useContext } from "react";
-import { Text } from "react-native";
+import { Button, Text } from "react-native";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useSync } from "intus-core/main/hooks/useSync";
 function Carousel() {
 	const { setIsLoading } = useContext(AppContext);
-	const { sync } = useSync();
+	const { sync, connect, disconnect } = useSync();
 
 	useEffect(() => {
 		(async () => {
@@ -15,7 +15,13 @@ function Carousel() {
 		})();
 	}, []);
 
-	return <Text style={{ color: "white" }}>Carousel</Text>;
+	return (
+		<>
+			<Text style={{ color: "white" }}>Carousel</Text>
+			<Button title="connect" onPress={connect} />
+			<Button title="disconnect" onPress={disconnect} />
+		</>
+	);
 }
 
 export default Carousel;
