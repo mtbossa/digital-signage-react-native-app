@@ -1,4 +1,4 @@
-import { Pusher } from "@pusher/pusher-websocket-react-native";
+import { Pusher, PusherEvent } from "@pusher/pusher-websocket-react-native";
 import { broadcastingAuthRequest } from "intus-api/requests/BroadcastingAuthRequest";
 import { getCurrentDisplayChannelName } from "intus-api/websockets/PrivateChannels";
 
@@ -37,9 +37,7 @@ export const usePusherConnector = () => {
 
 			await pusher.subscribe({
 				channelName: getCurrentDisplayChannelName(),
-				onEvent: event => {
-					console.log("Received event", event);
-				},
+				onEvent: handleEvent,
 				onSubscriptionSucceeded: data => {
 					console.log("onSubscriptionSucceeded");
 				},
@@ -49,6 +47,10 @@ export const usePusherConnector = () => {
 		} catch (e) {
 			console.log("Error while connecting", e);
 		}
+	};
+
+	const handleEvent = (event: PusherEvent) => {
+		console.log(event);
 	};
 
 	return {
