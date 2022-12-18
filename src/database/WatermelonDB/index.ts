@@ -22,7 +22,7 @@ const adapter = new SQLiteAdapter({
 });
 
 // Then, make a Watermelon database from it!
-const database = new Database({
+export const database = new Database({
 	adapter,
 	modelClasses: [Post, Media],
 });
