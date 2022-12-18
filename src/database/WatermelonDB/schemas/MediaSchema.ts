@@ -8,5 +8,17 @@ export const MediaSchema = tableSchema({
 			type: "number",
 			isIndexed: true,
 		},
+		{
+			name: "path",
+			type: "string",
+		},
+		{
+			name: "type",
+			type: "string",
+		},
+		{
+			name: "filename",
+			type: "string",
+		},
 	],
 });
