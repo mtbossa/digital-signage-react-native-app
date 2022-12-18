@@ -4,6 +4,7 @@ import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
 
 import { schema } from "./schemas";
 import { Post } from "./models/Post";
+import { Media } from "./models/Media";
 // First, create the adapter to the underlying database:
 const adapter = new SQLiteAdapter({
 	schema,
@@ -23,7 +24,5 @@ const adapter = new SQLiteAdapter({
 // Then, make a Watermelon database from it!
 const database = new Database({
 	adapter,
-	modelClasses: [
-		Post, // ⬅️ You'll add Models to Watermelon here
-	],
+	modelClasses: [Post, Media],
 });
