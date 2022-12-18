@@ -8,6 +8,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@nozbe/watermelondb": "^0.24.0",
     "@pusher/pusher-websocket-react-native": "^1.1.1",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "axios": "^1.2.1",
@@ -19,10 +20,12 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
-    "react-native-web": "~0.18.9"
+    "react-native-web": "~0.18.9",
+    "expo-build-properties": "~0.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-decorators": "^7.20.5",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.70.6",
     "babel-plugin-module-resolver": "^4.1.0",
