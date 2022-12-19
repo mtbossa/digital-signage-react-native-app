@@ -31,7 +31,7 @@ export const downloadHandler = async (
 
 			if (!isStatusCodeOk(download)) {
 				// We try to delete the file if the status code is not 200
-				await FileSystem.deleteAsync(DOWNLOAD_PATH, { idempotent: true });
+				await deleteFile(DOWNLOAD_PATH);
 			} else {
 				return { ...media, downloadedPath: download!.uri };
 			}
@@ -46,4 +46,12 @@ const isStatusCodeOk = (downloadResult: FileSystem.FileSystemDownloadResult | un
 	return downloadResult?.status === 200;
 };
 
-export const makeDownloadPath = (filename: string) => FileSystem.documentDirectory + filename;
+export const deleteFile = async (path: string) => {
+	return await FileSystem.deleteAsync(path, { idempotent: true });
+};
+
+export const makeDownloadPath = (filename: string) =>
+	`${FileSystem.documentDirectory}/medias/${filename}`;
+
+export const mediaExists = async (filename: string) =>
+	(await FileSystem.getInfoAsync(makeDownloadPath(filename))).exists;
