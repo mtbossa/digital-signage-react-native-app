@@ -8,6 +8,7 @@ export const createMedia = async (media: MediaWithPosts) => {
 			newMedia.media_id = media.id;
 			newMedia.filename = media.filename;
 			newMedia.type = media.type;
+			newMedia.path = media.path;
 			newMedia.downloaded = false;
 		});
 
