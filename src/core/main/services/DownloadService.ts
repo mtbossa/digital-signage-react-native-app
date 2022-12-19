@@ -1,13 +1,11 @@
 import * as FileSystem from "expo-file-system";
-import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
 import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFailedError";
+import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 
 export const MAX_TRIES = 3;
 export const MEDIAS_DIR = `${FileSystem.documentDirectory}/medias`;
 
-export const downloadHandler = async (
-	media: MediaWithPosts
-): Promise<MediaWithPosts & { downloadedPath: string }> => {
+export const mediaDownloadHandler = async (media: Media): Promise<Media> => {
 	const DOWNLOAD_URL = `http://192.168.1.99/api/media/${media.filename}/download`;
 	const DOWNLOAD_PATH = await makeDownloadPath(media.filename);
 
@@ -23,7 +21,7 @@ export const downloadHandler = async (
 			},
 		},
 		progress => {
-			console.log(`Downloading media ${media.id}. Progress`, progress);
+			console.log(`Downloading media ${media.media_id}. Progress`, progress);
 		}
 	);
 
@@ -40,7 +38,8 @@ export const downloadHandler = async (
 				// We try to delete the file if the status code is not 200
 				await deleteFile(DOWNLOAD_PATH);
 			} else {
-				return { ...media, downloadedPath: download!.uri };
+				await media.setDownloadedPath(download!.uri);
+				return media;
 			}
 		} catch (e) {
 			console.log(`Could not download, retrying after ${timeout}`);
@@ -48,7 +47,7 @@ export const downloadHandler = async (
 	}
 
 	// throw here works as reject() call inside a Promise.
-	throw new DownloadFailedError(media.id, MAX_TRIES);
+	throw new DownloadFailedError(media.media_id, MAX_TRIES);
 };
 
 const isStatusCodeOk = (downloadResult: FileSystem.FileSystemDownloadResult | undefined) => {

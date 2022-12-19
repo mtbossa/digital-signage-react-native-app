@@ -4,7 +4,7 @@ import { Q } from "@nozbe/watermelondb";
 import { displayPostsSyncRequest } from "intus-api/requests/DisplayPostsSyncRequest";
 import { database } from "intus-database/WatermelonDB";
 import { Media } from "intus-database/WatermelonDB/models/Media/Media";
-import { downloadHandler } from "../services/DownloadService";
+import { mediaDownloadHandler, mediaExists } from "../services/DownloadService";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
 import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFailedError";
 
@@ -26,14 +26,14 @@ export const useSync = () => {
 						.fetch();
 
 					if (media) {
-						if (!media.downloaded) {
-							const downloadedMedia = await downloadHandler(mediaWithPosts);
-							await media.setDownloadedPath(downloadedMedia.downloadedPath);
+						if (!media.downloaded && !mediaExists(media.filename)) {
+							const updatedMedia = await mediaDownloadHandler(media);
+							console.log("Local saved media", { updatedMedia });
 						}
 					} else {
 						const createdMedia = await createMedia(mediaWithPosts);
-						const downloadedMedia = await downloadHandler(mediaWithPosts);
-						await createdMedia.setDownloadedPath(downloadedMedia.downloadedPath);
+						const updatedMedia = await mediaDownloadHandler(createdMedia);
+						console.log("Newly created media", { updatedMedia });
 					}
 				})
 			);
