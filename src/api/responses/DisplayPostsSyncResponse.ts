@@ -12,8 +12,8 @@ export interface MediaWithPosts {
 
 interface Post {
 	id: number;
-	start_date: Date | null;
-	end_date: Date | null;
+	start_date: string | null;
+	end_date: string | null;
 	start_time: string;
 	end_time: string;
 	expose_time: number | null;
