@@ -29,7 +29,7 @@ export const useSync = () => {
 			});
 
 			failedDownloads.forEach(result => {
-				// We know result.reason is a MediaWithPosts because the downloadHandler function rejects()
+				// We know result.reason is a MediaWithPosts because the downloadHandler() function rejects()
 				// with the MediaWithPosts value. Reject value goes into reason property.
 				const media: MediaWithPosts = result.reason;
 				// TODO do something with the medias that failed to download, probably create a retry button
