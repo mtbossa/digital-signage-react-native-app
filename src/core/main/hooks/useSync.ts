@@ -43,6 +43,7 @@ export const useSync = () => {
 			result.forEach(result => {
 				if (result.status === "rejected") {
 					if (result.reason instanceof DownloadFailedError) {
+						// TODO do something if download failed
 						console.log("Is object", result.reason.mediaId);
 					}
 				}
