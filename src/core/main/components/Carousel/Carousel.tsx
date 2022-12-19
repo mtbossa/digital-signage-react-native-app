@@ -29,10 +29,7 @@ function Carousel() {
 				media.path = "b";
 			});
 			console.log(newMedia);
-			console.log(await database.get("posts").query().fetch()
-			
-			
-			);
+			console.log(await database.get<Media>("medias").query(Q.where("media_id", 1)).fetch());
 		});
 	};
 
