@@ -6,7 +6,6 @@ export interface MediaWithPosts {
 	id: number;
 	type: "image" | "video";
 	filename: string;
-	path: string;
 	posts: Post[];
 }
 

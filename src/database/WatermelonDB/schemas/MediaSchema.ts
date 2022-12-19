@@ -9,10 +9,6 @@ export const MediaSchema = tableSchema({
 			isIndexed: true,
 		},
 		{
-			name: "path",
-			type: "string",
-		},
-		{
 			name: "type",
 			type: "string",
 		},
