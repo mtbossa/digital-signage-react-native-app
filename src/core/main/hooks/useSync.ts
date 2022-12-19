@@ -1,8 +1,13 @@
 import { isAxiosError } from "axios";
+import { Q } from "@nozbe/watermelondb";
 
 import { displayPostsSyncRequest } from "intus-api/requests/DisplayPostsSyncRequest";
 import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
-import { downloadHandler } from "../services/DownloadService";
+import { database } from "intus-database/WatermelonDB";
+import { Media } from "intus-database/WatermelonDB/models/Media/Media";
+import { Post } from "intus-database/WatermelonDB/models/Post";
+import { downloadHandler, mediaExists } from "../services/DownloadService";
+import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -11,28 +16,29 @@ export const useSync = () => {
 				data: { data: mediaWithPosts },
 			} = await displayPostsSyncRequest();
 
-			const downloadAllMedias = mediaWithPosts.map(media => downloadHandler(media));
+			const result = await Promise.allSettled(
+				mediaWithPosts.map(async mediaWithPosts => {
+					const [media] = await database
+						.get<Media>("medias")
+						.query(Q.where("media_id", mediaWithPosts.id))
+						.fetch();
 
-			const downloadResult = await Promise.allSettled(downloadAllMedias);
+					if (media) {
+						console.log("Media exists: ", media.media_id);
+					} else {
+						console.log("Media doesnt exists");
+						// TODO create error classes and thrown them inside these functions
+						const createdMedia = await createMedia(mediaWithPosts);
+						const downloadedMedia = await downloadHandler(mediaWithPosts);
+						await createdMedia.setDownloadedPath(downloadedMedia.downloadedPath);
+					}
+				})
+			);
 
-			const successfulDownloads = downloadResult.filter(
-				result => result.status === "fulfilled"
-			) as PromiseFulfilledResult<MediaWithPosts>[];
-
-			const failedDownloads = downloadResult.filter(
-				result => result.status === "rejected"
-			) as PromiseRejectedResult[];
-
-			successfulDownloads.forEach(result => {
-				console.log("HEEEEERE sucesss", result.value);
-				//! Store media and posts on database
-			});
-
-			failedDownloads.forEach(result => {
-				// We know result.reason is a MediaWithPosts because the downloadHandler() function rejects()
-				// with the MediaWithPosts value. Reject value goes into reason property.
-				const media: MediaWithPosts = result.reason;
-				// TODO do something with the medias that failed to download, probably create a retry button
+			result.forEach(result => {
+				if (result.status === "rejected") {
+					console.log("Reason: ", result.reason);
+				}
 			});
 		} catch (err) {
 			if (isAxiosError(err)) {

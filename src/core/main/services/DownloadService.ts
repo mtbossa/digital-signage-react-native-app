@@ -1,14 +1,17 @@
 import * as FileSystem from "expo-file-system";
 import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
 
+const MEDIAS_DIR = `${FileSystem.documentDirectory}/medias`;
+
 export const downloadHandler = async (
 	media: MediaWithPosts
 ): Promise<MediaWithPosts & { downloadedPath: string }> => {
 	const DOWNLOAD_URL = `http://192.168.1.99/api/media/${media.filename}/download`;
-	const DOWNLOAD_PATH = makeDownloadPath(media.filename);
+	const DOWNLOAD_PATH = await makeDownloadPath(media.filename);
 	const MAX_TRIES = 3;
 
 	let tries = 1;
+	let timeout = 1000 * tries;
 
 	const downloadResumable = FileSystem.createDownloadResumable(
 		DOWNLOAD_URL,
@@ -19,13 +22,16 @@ export const downloadHandler = async (
 			},
 		},
 		progress => {
-			console.log("Progress", progress);
+			console.log(`Downloading media ${media.id}. Progress`, progress);
 		}
 	);
 
 	while (tries <= MAX_TRIES) {
 		try {
 			tries = tries + 1;
+			timeout = 1000 * tries;
+
+			await awaitableTimeout(timeout);
 
 			const download = await downloadResumable.downloadAsync();
 
@@ -35,7 +41,9 @@ export const downloadHandler = async (
 			} else {
 				return { ...media, downloadedPath: download!.uri };
 			}
-		} catch (e) {}
+		} catch (e) {
+			console.log(`Could not download, retrying after ${timeout}`);
+		}
 	}
 
 	// throw here works as reject() call inside a Promise.
@@ -50,8 +58,22 @@ export const deleteFile = async (path: string) => {
 	return await FileSystem.deleteAsync(path, { idempotent: true });
 };
 
-export const makeDownloadPath = (filename: string) =>
-	`${FileSystem.documentDirectory}/medias/${filename}`;
+export const makeDownloadPath = async (filename: string) => {
+	const { exists } = await FileSystem.getInfoAsync(MEDIAS_DIR);
+	if (!exists) {
+		await createMediasDirectory();
+	}
+	return `${MEDIAS_DIR}/${filename}`;
+};
 
 export const mediaExists = async (filename: string) =>
-	(await FileSystem.getInfoAsync(makeDownloadPath(filename))).exists;
+	(await FileSystem.getInfoAsync(await makeDownloadPath(filename))).exists;
+
+const createMediasDirectory = async () => await FileSystem.makeDirectoryAsync(MEDIAS_DIR);
+
+const awaitableTimeout = async (timeoutMs: number) =>
+	new Promise((res, _) => {
+		setTimeout(() => {
+			res(undefined);
+		}, timeoutMs);
+	});
