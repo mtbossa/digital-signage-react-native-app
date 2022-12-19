@@ -1,14 +1,14 @@
-import { Pusher } from "@pusher/pusher-websocket-react-native";
-import axios, { AxiosError } from "axios";
-import { axiosClient } from "intus-api/index";
-import { PostResponse } from "intus-api/responses/PostResponse";
+import { isAxiosError } from "axios";
+import { displayPostsSyncRequest } from "intus-api/requests/DisplayPostsSyncRequest";
 
 export const useSync = () => {
 	const sync = async () => {
 		try {
-			const { data: posts } = await axiosClient.get<PostResponse>("api/raspberry/display/posts");
+			const {
+				data: { data: mediaWithPosts },
+			} = await displayPostsSyncRequest();
 		} catch (err) {
-			if (axios.isAxiosError(err)) {
+			if (isAxiosError(err)) {
 				console.error("Could not sync with backend");
 			}
 		}

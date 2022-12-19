@@ -21,14 +21,19 @@ function Carousel() {
 	}, []);
 
 	const createPost = async () => {
-		const newMedia = await database.get<Media>("medias").create(media => {
-			media.mediaId = 1;
-			media.filename = "a";
-			media.type = "image";
-			media.path = "b";
+		await database.write(async () => {
+			const newMedia = await database.get<Media>("medias").create(media => {
+				media.mediaId = 1;
+				media.filename = "a";
+				media.type = "image";
+				media.path = "b";
+			});
+			console.log(newMedia);
+			console.log(await database.get("posts").query().fetch()
+			
+			
+			);
 		});
-		console.log(newMedia);
-		console.log(await database.get("posts").query(Q.where("media_id", 1)).fetch());
 	};
 
 	return (
