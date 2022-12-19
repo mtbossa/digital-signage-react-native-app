@@ -4,7 +4,7 @@ import { field, json } from "@nozbe/watermelondb/decorators";
 export class Media extends Model {
 	static table = "medias";
 
-	@field("media_id") mediaId!: number;
+	@field("media_id") media_id!: number;
 	@field("filename") filename!: string;
 	@field("path") path!: string;
 	@field("type") type!: "video" | "image";

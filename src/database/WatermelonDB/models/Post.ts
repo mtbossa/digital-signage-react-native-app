@@ -10,8 +10,8 @@ interface Recurrence {
 export class Post extends Model {
 	static table = "posts";
 
-	@field("post_id") postId!: number;
-	@field("media_id") mediaId!: number;
+	@field("post_id") post_id!: number;
+	@field("media_id") media_id!: number;
 	@field("start_time") start_time!: string;
 	@field("end_time") end_time!: string;
 	@field("start_date") start_date!: string | null;
