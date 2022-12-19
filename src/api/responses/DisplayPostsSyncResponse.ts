@@ -4,7 +4,7 @@ export interface DisplayPostsSyncResponse {
 
 export interface MediaWithPosts {
 	id: number;
-	type: string;
+	type: "image" | "video";
 	filename: string;
 	path: string;
 	posts: Post[];
