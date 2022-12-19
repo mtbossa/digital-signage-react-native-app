@@ -33,10 +33,6 @@ export const useSync = () => {
 							await media.setDownloadedPath(downloadedMedia.downloadedPath);
 						}
 					} else {
-						console.log("Media doesnt exists");
-						// TODO create error classes and thrown them inside these functions
-						// so we can handle them properly in the result array. Ex.: inside downloadHandler
-						// throw a DownloadFailedError class with the media id that failed
 						const createdMedia = await createMedia(mediaWithPosts);
 						const downloadedMedia = await downloadHandler(mediaWithPosts);
 						await createdMedia.setDownloadedPath(downloadedMedia.downloadedPath);
