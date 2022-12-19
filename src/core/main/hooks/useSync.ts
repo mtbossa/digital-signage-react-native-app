@@ -1,34 +1,42 @@
 import { isAxiosError } from "axios";
-import * as FileSystem from "expo-file-system";
 
 import { displayPostsSyncRequest } from "intus-api/requests/DisplayPostsSyncRequest";
+import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
 import { downloadHandler } from "../services/DownloadService";
 
 export const useSync = () => {
 	const sync = async () => {
 		try {
-			console.log(await FileSystem.readDirectoryAsync(FileSystem.documentDirectory!));
-
 			const {
 				data: { data: mediaWithPosts },
 			} = await displayPostsSyncRequest();
 
 			const downloadAllMedias = mediaWithPosts.map(media => downloadHandler(media));
 
-			const result = await Promise.allSettled(downloadAllMedias);
+			const downloadResult = await Promise.allSettled(downloadAllMedias);
 
-			const test = result.map(result => {
-				if (result.status === "fulfilled") {
-					console.log("value: ", result.value);
-				} else if (result.status === "rejected") {
-					console.log("reason: ", result.reason);
-				}
+			const successfulDownloads = downloadResult.filter(
+				result => result.status === "fulfilled"
+			) as PromiseFulfilledResult<MediaWithPosts>[];
+
+			const failedDownloads = downloadResult.filter(
+				result => result.status === "rejected"
+			) as PromiseRejectedResult[];
+
+			successfulDownloads.forEach(result => {
+				console.log("HEEEEERE sucesss", result.value);
+				//! Store media and posts on database
 			});
 
-			console.log(await FileSystem.readDirectoryAsync(FileSystem.documentDirectory!));
+			failedDownloads.forEach(result => {
+				// We know result.reason is a MediaWithPosts because the downloadHandler function rejects()
+				// with the MediaWithPosts value. Reject value goes into reason property.
+				const media: MediaWithPosts = result.reason;
+				// TODO do something with the medias that failed to download, probably create a retry button
+			});
 		} catch (err) {
 			if (isAxiosError(err)) {
-				console.error("Could not sync with backend");
+				console.error("Axios could not make the request");
 			}
 		}
 
