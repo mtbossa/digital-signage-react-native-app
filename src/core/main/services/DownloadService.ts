@@ -33,6 +33,7 @@ export const downloadHandler = (media: MediaWithPosts) => {
 					await FileSystem.deleteAsync(DOWNLOAD_PATH, { idempotent: true });
 				} else {
 					resolve(media);
+					break;
 				}
 			} catch (e) {}
 		}
