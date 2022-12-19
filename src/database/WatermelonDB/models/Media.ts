@@ -8,4 +8,5 @@ export class Media extends Model {
 	@field("filename") filename!: string;
 	@field("path") path!: string;
 	@field("type") type!: "video" | "image";
+	@field("downloaded") downloaded!: boolean;
 }

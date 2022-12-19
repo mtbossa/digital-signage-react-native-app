@@ -20,5 +20,9 @@ export const MediaSchema = tableSchema({
 			name: "filename",
 			type: "string",
 		},
+		{
+			name: "downloaded",
+			type: "boolean",
+		},
 	],
 });
