@@ -2,7 +2,7 @@ export interface DisplayPostsSyncResponse {
 	data: MediaWithPosts[];
 }
 
-interface MediaWithPosts {
+export interface MediaWithPosts {
 	id: number;
 	type: string;
 	filename: string;
