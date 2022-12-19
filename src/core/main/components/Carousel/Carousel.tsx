@@ -6,7 +6,7 @@ import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useSync } from "intus-core/main/hooks/useSync";
 import { usePusherConnector } from "intus-core/main/hooks/usePusherConnector";
 import { database } from "intus-database/WatermelonDB";
-import { Media } from "intus-database/WatermelonDB/models/Media";
+import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 function Carousel() {
 	const { setIsLoading } = useContext(AppContext);
 	const { sync } = useSync();
@@ -20,16 +20,10 @@ function Carousel() {
 		})();
 	}, []);
 
-	const createPost = async () => {
+	const deletePost = async () => {
 		await database.write(async () => {
-			const newMedia = await database.get<Media>("medias").create(media => {
-				media.mediaId = 1;
-				media.filename = "a";
-				media.type = "image";
-				media.path = "b";
-			});
-			console.log(newMedia);
-			console.log(await database.get<Media>("medias").query(Q.where("media_id", 1)).fetch());
+			const [media] = await database.get<Media>("medias").query(Q.where("media_id", 10)).fetch();
+			await media.destroyPermanently();
 		});
 	};
 
@@ -37,7 +31,7 @@ function Carousel() {
 		<>
 			<Text style={{ color: "white" }}>Carousel</Text>
 			<Button title="connect" onPress={connect} />
-			<Button title="create" onPress={createPost} />
+			<Button title="delete" onPress={deletePost} />
 		</>
 	);
 }
