@@ -1,14 +1,15 @@
 import * as FileSystem from "expo-file-system";
 import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
+import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFailedError";
 
-const MEDIAS_DIR = `${FileSystem.documentDirectory}/medias`;
+export const MAX_TRIES = 3;
+export const MEDIAS_DIR = `${FileSystem.documentDirectory}/medias`;
 
 export const downloadHandler = async (
 	media: MediaWithPosts
 ): Promise<MediaWithPosts & { downloadedPath: string }> => {
 	const DOWNLOAD_URL = `http://192.168.1.99/api/media/${media.filename}/download`;
 	const DOWNLOAD_PATH = await makeDownloadPath(media.filename);
-	const MAX_TRIES = 3;
 
 	let tries = 1;
 	let timeout = 1000 * tries;
@@ -47,7 +48,7 @@ export const downloadHandler = async (
 	}
 
 	// throw here works as reject() call inside a Promise.
-	throw media;
+	throw new DownloadFailedError(media.id, MAX_TRIES);
 };
 
 const isStatusCodeOk = (downloadResult: FileSystem.FileSystemDownloadResult | undefined) => {

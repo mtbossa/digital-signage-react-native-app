@@ -8,6 +8,7 @@ import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 import { Post } from "intus-database/WatermelonDB/models/Post";
 import { downloadHandler, mediaExists } from "../services/DownloadService";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
+import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFailedError";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -27,7 +28,10 @@ export const useSync = () => {
 						.fetch();
 
 					if (media) {
-						console.log("Media exists: ", media.media_id);
+						if (!media.downloaded) {
+							const downloadedMedia = await downloadHandler(mediaWithPosts);
+							await media.setDownloadedPath(downloadedMedia.downloadedPath);
+						}
 					} else {
 						console.log("Media doesnt exists");
 						// TODO create error classes and thrown them inside these functions
@@ -42,7 +46,9 @@ export const useSync = () => {
 
 			result.forEach(result => {
 				if (result.status === "rejected") {
-					console.log("Reason: ", result.reason);
+					if (result.reason instanceof DownloadFailedError) {
+						console.log("Is object", result.reason.mediaId);
+					}
 				}
 			});
 		} catch (err) {
