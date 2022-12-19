@@ -2,11 +2,9 @@ import { isAxiosError } from "axios";
 import { Q } from "@nozbe/watermelondb";
 
 import { displayPostsSyncRequest } from "intus-api/requests/DisplayPostsSyncRequest";
-import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
 import { database } from "intus-database/WatermelonDB";
 import { Media } from "intus-database/WatermelonDB/models/Media/Media";
-import { Post } from "intus-database/WatermelonDB/models/Post";
-import { downloadHandler, mediaExists } from "../services/DownloadService";
+import { downloadHandler } from "../services/DownloadService";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
 import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFailedError";
 
