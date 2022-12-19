@@ -16,6 +16,9 @@ export const useSync = () => {
 				data: { data: mediaWithPosts },
 			} = await displayPostsSyncRequest();
 
+			// TODO compare the returned medias from sync request with the currently stored medias
+			// and delete the ones that didn't come with this request, since it means that they're expired.
+
 			const result = await Promise.allSettled(
 				mediaWithPosts.map(async mediaWithPosts => {
 					const [media] = await database
