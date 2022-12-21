@@ -3,7 +3,7 @@ import { Database } from "@nozbe/watermelondb";
 import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
 
 import { schema } from "./schemas";
-import { Post } from "./models/Post";
+import { Post } from "./models/Post/Post";
 import { Media } from "./models/Media/Media";
 // First, create the adapter to the underlying database:
 const adapter = new SQLiteAdapter({

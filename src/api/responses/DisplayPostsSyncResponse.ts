@@ -9,7 +9,7 @@ export interface MediaWithPosts {
 	posts: Post[];
 }
 
-interface Post {
+export interface Post {
 	id: number;
 	start_date: string | null;
 	end_date: string | null;

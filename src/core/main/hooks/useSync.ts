@@ -7,6 +7,9 @@ import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 import { mediaDownloadHandler, mediaExists } from "../services/DownloadService";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
 import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFailedError";
+import { createPost } from "intus-database/WatermelonDB/models/Post/create/createPost";
+import { Post } from "intus-database/WatermelonDB/models/Post/Post";
+import { updatePost } from "intus-database/WatermelonDB/models/Post/update/updatePost";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -40,6 +43,23 @@ export const useSync = () => {
 						const createdMedia = await createMedia(mediaWithPosts);
 						await mediaDownloadHandler(createdMedia);
 					}
+
+					const postsResult = await Promise.allSettled(
+						mediaWithPosts.posts.map(async apiPost => {
+							let [post] = await database
+								.get<Post>("posts")
+								.query(Q.where("post_id", apiPost.id))
+								.fetch();
+
+							if (post) {
+								await updatePost(post, apiPost);
+							} else {
+								await createPost(apiPost);
+							}
+						})
+					);
+
+					console.log({ postsResult });
 				})
 			);
 
