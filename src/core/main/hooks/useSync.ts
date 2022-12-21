@@ -11,6 +11,7 @@ import { createPost } from "intus-database/WatermelonDB/models/Post/create/creat
 import { Post } from "intus-database/WatermelonDB/models/Post/Post";
 import { updatePost } from "intus-database/WatermelonDB/models/Post/update/updatePost";
 import { findPostByPostId } from "intus-database/WatermelonDB/models/Post/query/findPostByPostId";
+import { findMediaByMediaId } from "intus-database/WatermelonDB/models/Media/query/findMediaByMediaId";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -24,10 +25,7 @@ export const useSync = () => {
 
 			const result = await Promise.allSettled(
 				mediaWithPosts.map(async mediaWithPosts => {
-					let [media] = await database
-						.get<Media>("medias")
-						.query(Q.where("media_id", mediaWithPosts.id))
-						.fetch();
+					const media = await findMediaByMediaId(mediaWithPosts.id);
 
 					if (media) {
 						const mediaFileExists = await mediaExists(media.filename);
