@@ -20,7 +20,7 @@ export const useSync = () => {
 
 			const result = await Promise.allSettled(
 				mediaWithPosts.map(async mediaWithPosts => {
-					const [media] = await database
+					let [media] = await database
 						.get<Media>("medias")
 						.query(Q.where("media_id", mediaWithPosts.id))
 						.fetch();
