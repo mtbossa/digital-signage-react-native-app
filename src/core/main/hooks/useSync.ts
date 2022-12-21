@@ -54,8 +54,6 @@ export const useSync = () => {
 							}
 						})
 					);
-
-					console.log({ postsResult });
 				})
 			);
 
