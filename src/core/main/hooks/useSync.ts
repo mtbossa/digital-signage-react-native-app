@@ -17,14 +17,14 @@ export const useSync = () => {
 	const sync = async () => {
 		try {
 			const {
-				data: { data: mediaWithPosts },
+				data: { data: mediasWithPosts },
 			} = await displayPostsSyncRequest();
 
 			// TODO compare the returned medias from sync request with the currently stored medias
 			// and delete the ones that didn't come with this request, since it means that they're expired.
 
 			const result = await Promise.allSettled(
-				mediaWithPosts.map(async mediaWithPosts => {
+				mediasWithPosts.map(async mediaWithPosts => {
 					const media = await findMediaByMediaId(mediaWithPosts.id);
 
 					if (media) {
