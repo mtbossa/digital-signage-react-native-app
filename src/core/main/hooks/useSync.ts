@@ -23,6 +23,7 @@ export const useSync = () => {
 			} = await displayPostsSyncRequest();
 
 			await createAndUpdateMedias(mediasWithPosts);
+			await checkAndDownloadMediasFiles();
 
 			// // TODO compare the returned medias from sync request with the currently stored medias
 			// // and delete the ones that didn't come with this request, since it means that they're expired.
@@ -60,15 +61,6 @@ export const useSync = () => {
 			// 		);
 			// 	})
 			// );
-
-			// result.forEach(result => {
-			// 	if (result.status === "rejected") {
-			// 		if (result.reason instanceof DownloadFailedError) {
-			// 			// TODO do something if download failed
-			// 			console.log("Is object", result.reason.mediaId);
-			// 		}
-			// 	}
-			// });
 		} catch (err) {
 			if (isAxiosError(err)) {
 				console.error("Axios could not make the request");
@@ -100,17 +92,50 @@ export const useSync = () => {
 			})
 		);
 
-		const batches = results.map(result => {
-			if (result.status === "fulfilled") {
-				if (result.value) {
-					return result.value;
-				}
+		const mediasBatch = results.map(result => {
+			if (result.status === "fulfilled" && result.value) {
+				return result.value;
 			}
-		}) as Model[];
+		}) as Media[];
 
-		await database.write(() => database.batch(...batches));
+		console.log({ mediasBatch });
+
+		await database.write(() => database.batch(...mediasBatch));
 
 		console.log("FINISH BATCHING MEDIAS");
+	};
+
+	const checkAndDownloadMediasFiles = async () => {
+		const allMedias = await database.get<Media>("medias").query().fetch();
+
+		const results = await Promise.allSettled(
+			allMedias.map(async media => {
+				return await mediaDownloadHandler(media);
+			})
+		);
+
+		const failedDownloads = results.filter(
+			result => result.status === "rejected"
+		) as PromiseRejectedResult[];
+
+		// TODO do something with failed downloads;
+
+		const succesfullDownloadsResult = results.filter(
+			result => result.status === "fulfilled" && result.value
+		) as PromiseFulfilledResult<{
+			media: Media;
+			downloadedPath: string;
+		}>[];
+
+		const batchDownloadUpdates = succesfullDownloadsResult.map(result => {
+			const { media, downloadedPath } = result.value;
+			return media.prepareUpdate(updateMedia => {
+				updateMedia.downloaded = true;
+				updateMedia.downloadedPath = downloadedPath;
+			});
+		});
+
+		await database.write(() => database.batch(...batchDownloadUpdates));
 	};
 
 	return {
