@@ -29,7 +29,7 @@ export const useSync = () => {
 						const mediaFileExists = await mediaExists(media.filename);
 
 						// This is a insurance that the media file and data is always correct, because
-						// it could happen that the media download failed but downloaded was true,
+						// it could happen that the media download failed but downloaded property is true,
 						// and vice-versa
 						if (!media.downloaded && mediaFileExists.exists) {
 							await media.setDownloadedPath(mediaFileExists.path);
