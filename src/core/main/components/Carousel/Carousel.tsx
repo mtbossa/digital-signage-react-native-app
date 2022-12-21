@@ -5,7 +5,7 @@ import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useSync } from "intus-core/main/hooks/useSync";
 import { usePusherConnector } from "intus-core/main/hooks/usePusherConnector";
 import { database } from "intus-database/WatermelonDB";
-import { Post } from "intus-database/WatermelonDB/models/Post";
+import { Post } from "intus-database/WatermelonDB/models/Post/Post";
 
 function Carousel() {
 	const { setIsLoading } = useContext(AppContext);

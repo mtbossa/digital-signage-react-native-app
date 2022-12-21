@@ -10,6 +10,7 @@ import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFa
 import { createPost } from "intus-database/WatermelonDB/models/Post/create/createPost";
 import { Post } from "intus-database/WatermelonDB/models/Post/Post";
 import { updatePost } from "intus-database/WatermelonDB/models/Post/update/updatePost";
+import { findPostByPostId } from "intus-database/WatermelonDB/models/Post/query/findPostByPostId";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -46,10 +47,7 @@ export const useSync = () => {
 
 					const postsResult = await Promise.allSettled(
 						mediaWithPosts.posts.map(async apiPost => {
-							let [post] = await database
-								.get<Post>("posts")
-								.query(Q.where("post_id", apiPost.id))
-								.fetch();
+							const post = await findPostByPostId(apiPost.id);
 
 							if (post) {
 								await updatePost(post, apiPost);
