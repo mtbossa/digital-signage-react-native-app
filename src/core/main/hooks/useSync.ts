@@ -24,43 +24,10 @@ export const useSync = () => {
 
 			await createAndUpdateMedias(mediasWithPosts);
 			await checkAndDownloadMediasFiles();
+			await createAndUpdatePosts(mediasWithPosts);
 
 			// // TODO compare the returned medias from sync request with the currently stored medias
 			// // and delete the ones that didn't come with this request, since it means that they're expired.
-
-			// const result = await Promise.allSettled(
-			// 	mediasWithPosts.map(async mediaWithPosts => {
-			// 		const media = await findMediaByMediaId(mediaWithPosts.id);
-
-			// 		if (media) {
-			// 			const mediaFileExists = await mediaExists(media.filename);
-
-			// 			// This is a insurance that the media file and data is always correct, because
-			// 			// it could happen that the media download failed but downloaded property is true,
-			// 			// and vice-versa
-			// 			if (!media.downloaded && mediaFileExists.exists) {
-			// 				await media.setDownloadedPath(mediaFileExists.path);
-			// 			} else if (!mediaFileExists.exists) {
-			// 				await mediaDownloadHandler(media);
-			// 			}
-			// 		} else {
-			// 			const createdMedia = await createMedia(mediaWithPosts);
-			// 			await mediaDownloadHandler(createdMedia);
-			// 		}
-
-			// 		const postsResult = await Promise.allSettled(
-			// 			mediaWithPosts.posts.map(async apiPost => {
-			// 				const post = await findPostByPostId(apiPost.id);
-
-			// 				if (post) {
-			// 					await updatePost(post, apiPost);
-			// 				} else {
-			// 					await createPost(apiPost);
-			// 				}
-			// 			})
-			// 		);
-			// 	})
-			// );
 		} catch (err) {
 			if (isAxiosError(err)) {
 				console.error("Axios could not make the request");
@@ -136,6 +103,68 @@ export const useSync = () => {
 		});
 
 		await database.write(() => database.batch(...batchDownloadUpdates));
+	};
+
+	const createAndUpdatePosts = async (mediasWithPosts: MediaWithPosts[]) => {
+		const results = await Promise.allSettled(
+			mediasWithPosts.map(async mediaWithPosts => {
+				const media = await findMediaByMediaId(mediaWithPosts.id);
+				if (!media) {
+					throw new Error("Media not created");
+				}
+
+				const resultsPosts = await Promise.allSettled(
+					mediaWithPosts.posts.map(async apiPost => {
+						const post = await findPostByPostId(apiPost.id);
+						if (post) {
+							return post.prepareUpdate(updatePost => {
+								updatePost.post_id = apiPost.id;
+								updatePost.media_id = apiPost.media_id;
+								updatePost.start_date = apiPost.start_date;
+								updatePost.end_date = apiPost.end_date;
+								updatePost.start_time = apiPost.start_time;
+								updatePost.end_time = apiPost.end_time;
+								updatePost.expose_time = apiPost.expose_time;
+								updatePost.recurrence = apiPost.recurrence;
+								updatePost.showing = false;
+							});
+						} else {
+							return database.get<Post>("posts").prepareCreate(newPost => {
+								newPost.post_id = apiPost.id;
+								newPost.media_id = apiPost.media_id;
+								newPost.start_date = apiPost.start_date;
+								newPost.end_date = apiPost.end_date;
+								newPost.start_time = apiPost.start_time;
+								newPost.end_time = apiPost.end_time;
+								newPost.expose_time = apiPost.expose_time;
+								newPost.recurrence = apiPost.recurrence;
+								newPost.showing = false;
+							});
+						}
+					})
+				);
+
+				const postsBatch = resultsPosts.map(result => {
+					if (result.status === "fulfilled" && result.value) {
+						return result.value;
+					}
+				}) as Post[];
+
+				return postsBatch;
+			})
+		);
+
+		const batches = results.map(result => {
+			if (result.status === "fulfilled" && result.value) {
+				return result.value;
+			}
+		}) as Post[][];
+
+		console.log({ batches });
+
+		await database.write(() => database.batch(...batches.flat()));
+
+		console.log("FINISH BATCHING POSTS");
 	};
 
 	return {
