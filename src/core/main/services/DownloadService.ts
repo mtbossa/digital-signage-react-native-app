@@ -12,25 +12,31 @@ export const mediaDownloadHandler = async (media: Media): Promise<Media> => {
 	} = await mediaDownloadTempURLRequest(media.filename);
 	const DOWNLOAD_PATH = await makeDownloadPath(media.filename);
 
-	try {
-		console.log("Trying to download...: ", { DOWNLOAD_URL, DOWNLOAD_PATH });
-		const download = await FileSystem.downloadAsync(DOWNLOAD_URL, DOWNLOAD_PATH);
+	let tries = 1;
+	let timeout = 1000 * tries;
 
-		if (!isStatusCodeOk(download)) {
-			console.error("Status code not OK: ", download);
-			// We try to delete the file if the status code is not 200
-			await deleteFile(DOWNLOAD_PATH);
-		} else {
-			console.log("Media download successful: ", download.uri);
-			await media.setDownloadedPath(download.uri);
-			return media;
+	while (tries <= MAX_TRIES) {
+		try {
+			tries = tries + 1;
+			timeout = 1000 * tries;
+
+			await awaitableTimeout(timeout);
+			const download = await FileSystem.downloadAsync(DOWNLOAD_URL, DOWNLOAD_PATH);
+
+			if (!isStatusCodeOk(download)) {
+				// We try to delete the file if the status code is not 200
+				await deleteFile(DOWNLOAD_PATH);
+			} else {
+				await media.setDownloadedPath(download.uri);
+				return media;
+			}
+		} catch (e) {
+			console.log(`Could not download, retrying after ${timeout}`);
 		}
-	} catch (e) {
-		console.error(`Could not download.`, e);
 	}
 
 	// throw here works as reject() call inside a Promise.
-	throw new DownloadFailedError(media.media_id);
+	throw new DownloadFailedError(media.media_id, MAX_TRIES);
 };
 
 const isStatusCodeOk = (downloadResult: FileSystem.FileSystemDownloadResult | undefined) => {
