@@ -1,4 +1,5 @@
 import * as FileSystem from "expo-file-system";
+import { mediaDownloadTempURLRequest } from "intus-api/requests/MediaDownloadTempURLRequest";
 import { DownloadFailedError } from "intus-core/shared/helpers/errors/DownloadFailedError";
 import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 
@@ -6,24 +7,13 @@ export const MAX_TRIES = 3;
 export const MEDIAS_DIR = `${FileSystem.documentDirectory}/medias`;
 
 export const mediaDownloadHandler = async (media: Media): Promise<Media> => {
-	const DOWNLOAD_URL = `http://192.168.1.99/api/media/${media.filename}/download`;
+	const {
+		data: { temp_url: DOWNLOAD_URL },
+	} = await mediaDownloadTempURLRequest(media.filename);
 	const DOWNLOAD_PATH = await makeDownloadPath(media.filename);
 
 	let tries = 1;
 	let timeout = 1000 * tries;
-
-	const downloadResumable = FileSystem.createDownloadResumable(
-		DOWNLOAD_URL,
-		DOWNLOAD_PATH,
-		{
-			headers: {
-				Authorization: "Bearer yZE3gVNJMtiRshEq0OeJDYesfh9jophBEMU2ij7p",
-			},
-		},
-		progress => {
-			console.log(`Downloading media ${media.media_id}. Progress`, progress);
-		}
-	);
 
 	while (tries <= MAX_TRIES) {
 		try {
@@ -32,13 +22,14 @@ export const mediaDownloadHandler = async (media: Media): Promise<Media> => {
 
 			await awaitableTimeout(timeout);
 
-			const download = await downloadResumable.downloadAsync();
+			const download = await FileSystem.downloadAsync(DOWNLOAD_URL, DOWNLOAD_PATH);
 
 			if (!isStatusCodeOk(download)) {
 				// We try to delete the file if the status code is not 200
 				await deleteFile(DOWNLOAD_PATH);
 			} else {
-				await media.setDownloadedPath(download!.uri);
+				console.log("Media download successful: ", download.uri);
+				await media.setDownloadedPath(download.uri);
 				return media;
 			}
 		} catch (e) {
@@ -66,8 +57,13 @@ export const makeDownloadPath = async (filename: string) => {
 	return `${MEDIAS_DIR}/${filename}`;
 };
 
-export const mediaExists = async (filename: string) =>
-	(await FileSystem.getInfoAsync(await makeDownloadPath(filename))).exists;
+export const mediaExists = async (filename: string) => {
+	const fileInfo = await FileSystem.getInfoAsync(await makeDownloadPath(filename));
+	return {
+		exists: fileInfo.exists,
+		path: fileInfo.uri,
+	};
+};
 
 const createMediasDirectory = async () => await FileSystem.makeDirectoryAsync(MEDIAS_DIR);
 
