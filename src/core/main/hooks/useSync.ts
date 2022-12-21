@@ -14,6 +14,8 @@ import { findPostByPostId } from "intus-database/WatermelonDB/models/Post/query/
 import { findMediaByMediaId } from "intus-database/WatermelonDB/models/Media/query/findMediaByMediaId";
 import Model from "@nozbe/watermelondb/Model";
 import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
+import { prepareUpdatePost } from "intus-database/WatermelonDB/models/Post/update/prepareUpdatePost";
+import { prepareCreatePost } from "intus-database/WatermelonDB/models/Post/create/prepareCreatePost";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -117,29 +119,9 @@ export const useSync = () => {
 					mediaWithPosts.posts.map(async apiPost => {
 						const post = await findPostByPostId(apiPost.id);
 						if (post) {
-							return post.prepareUpdate(updatePost => {
-								updatePost.post_id = apiPost.id;
-								updatePost.media_id = apiPost.media_id;
-								updatePost.start_date = apiPost.start_date;
-								updatePost.end_date = apiPost.end_date;
-								updatePost.start_time = apiPost.start_time;
-								updatePost.end_time = apiPost.end_time;
-								updatePost.expose_time = apiPost.expose_time;
-								updatePost.recurrence = apiPost.recurrence;
-								updatePost.showing = false;
-							});
+							return prepareUpdatePost(post, apiPost);
 						} else {
-							return database.get<Post>("posts").prepareCreate(newPost => {
-								newPost.post_id = apiPost.id;
-								newPost.media_id = apiPost.media_id;
-								newPost.start_date = apiPost.start_date;
-								newPost.end_date = apiPost.end_date;
-								newPost.start_time = apiPost.start_time;
-								newPost.end_time = apiPost.end_time;
-								newPost.expose_time = apiPost.expose_time;
-								newPost.recurrence = apiPost.recurrence;
-								newPost.showing = false;
-							});
+							return prepareCreatePost(apiPost);
 						}
 					})
 				);
