@@ -10,6 +10,7 @@
       "intus-database/*": ["./src/database/*"],
       "intus-styles/*": ["./src/styles/*"],
       "intus-api/*": ["./src/api/*"]
-    }
+    },
+    "typeRoots": ["./src/types"],
   }
 }

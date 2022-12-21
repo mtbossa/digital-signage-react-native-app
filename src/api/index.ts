@@ -1,9 +1,9 @@
 import axios from "axios";
-
+import { API_URL, API_TOKEN } from "@env";
 export const axiosClient = axios.create({
-	baseURL: "http://192.168.1.99/",
+	baseURL: `${API_URL}/`,
 	headers: {
-		Authorization: "Bearer yZE3gVNJMtiRshEq0OeJDYesfh9jophBEMU2ij7p",
+		Authorization: `Bearer ${API_TOKEN}`,
 	},
 	timeout: 10000, // ms = 10s
 });
