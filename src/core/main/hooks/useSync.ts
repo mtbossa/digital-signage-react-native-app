@@ -16,6 +16,8 @@ import Model from "@nozbe/watermelondb/Model";
 import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
 import { prepareUpdatePost } from "intus-database/WatermelonDB/models/Post/update/prepareUpdatePost";
 import { prepareCreatePost } from "intus-database/WatermelonDB/models/Post/create/prepareCreatePost";
+import { prepareUpdateMedia } from "intus-database/WatermelonDB/models/Media/update/prepareUpdateMedia";
+import { prepareCreateMedia } from "intus-database/WatermelonDB/models/Media/create/prepareCreateMedia";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -45,18 +47,9 @@ export const useSync = () => {
 			mediasWithPosts.map(async mediaWithPosts => {
 				const media = await findMediaByMediaId(mediaWithPosts.id);
 				if (media) {
-					return media.prepareUpdate(updateMedia => {
-						updateMedia.media_id = mediaWithPosts.id;
-						updateMedia.filename = mediaWithPosts.filename;
-						updateMedia.type = mediaWithPosts.type;
-					});
+					return prepareUpdateMedia(media, mediaWithPosts);
 				} else {
-					return database.get<Media>("medias").prepareCreate(newMedia => {
-						newMedia.media_id = mediaWithPosts.id;
-						newMedia.filename = mediaWithPosts.filename;
-						newMedia.type = mediaWithPosts.type;
-						newMedia.downloaded = false;
-					});
+					return prepareCreateMedia(mediaWithPosts);
 				}
 			})
 		);
@@ -67,11 +60,7 @@ export const useSync = () => {
 			}
 		}) as Media[];
 
-		console.log({ mediasBatch });
-
 		await database.write(() => database.batch(...mediasBatch));
-
-		console.log("FINISH BATCHING MEDIAS");
 	};
 
 	const checkAndDownloadMediasFiles = async () => {
