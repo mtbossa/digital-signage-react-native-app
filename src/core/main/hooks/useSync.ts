@@ -131,11 +131,7 @@ export const useSync = () => {
 			}
 		}) as Post[][];
 
-		console.log({ batches });
-
 		await database.write(() => database.batch(...batches.flat()));
-
-		console.log("FINISH BATCHING POSTS");
 	};
 
 	return {
