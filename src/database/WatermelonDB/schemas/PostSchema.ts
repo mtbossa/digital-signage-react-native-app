@@ -40,5 +40,9 @@ export const PostSchema = tableSchema({
 			type: "string",
 			isOptional: true,
 		},
+		{
+			name: "showing",
+			type: "boolean",
+		},
 	],
 });

@@ -18,4 +18,5 @@ export class Post extends Model {
 	@field("end_date") end_date!: string | null;
 	@field("expose_time") expose_time!: number | null;
 	@json("recurrence", json => json) recurrence!: Recurrence | null;
+	@field("showing") showing!: boolean;
 }
