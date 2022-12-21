@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Button, Text } from "react-native";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
@@ -12,6 +12,8 @@ function Carousel() {
 	const { sync } = useSync();
 	const { connect } = usePusherConnector();
 
+	const [currentPlayingPost, setCurrentPlayingPost] = useState<Post | null>(null);
+
 	useEffect(() => {
 		(async () => {
 			setIsLoading(true);
@@ -24,6 +26,16 @@ function Carousel() {
 		const allPosts = await database.get<Post>("posts").query().fetch();
 		const allPostsIds = allPosts.map(post => `posts_ids{}=${post.post_id}`).join("&");
 		console.log(allPostsIds);
+
+		const showcase = () => {
+			let index = 0;
+			setInterval(() => {
+				setCurrentPlayingPost(allPosts[index]);
+				index = index + 1;
+			}, 5000);
+		};
+
+		showcase();
 	};
 
 	return (
@@ -31,6 +43,7 @@ function Carousel() {
 			<Text style={{ color: "white" }}>Carousel</Text>
 			<Button title="connect" onPress={connect} />
 			<Button title="test" onPress={test} />
+			{currentPlayingPost && <Text style={{ color: "white" }}>{currentPlayingPost.post_id}</Text>}
 		</>
 	);
 }
