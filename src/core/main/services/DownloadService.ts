@@ -10,7 +10,8 @@ export const mediaDownloadHandler = async (
 	media: Media
 ): Promise<{ media: Media; downloadedPath: string }> => {
 	const fileExists = await mediaExists(media.filename);
-	if (fileExists) {
+	console.log({ fileExists });
+	if (fileExists.exists) {
 		return { media, downloadedPath: fileExists.path };
 	}
 

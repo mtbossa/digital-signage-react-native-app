@@ -18,6 +18,7 @@ import { prepareUpdatePost } from "intus-database/WatermelonDB/models/Post/updat
 import { prepareCreatePost } from "intus-database/WatermelonDB/models/Post/create/prepareCreatePost";
 import { prepareUpdateMedia } from "intus-database/WatermelonDB/models/Media/update/prepareUpdateMedia";
 import { prepareCreateMedia } from "intus-database/WatermelonDB/models/Media/create/prepareCreateMedia";
+import { getFulfilledValues } from "intus-core/shared/helpers/functions/getFulfilledValues";
 
 export const useSync = () => {
 	const sync = async () => {
@@ -54,11 +55,7 @@ export const useSync = () => {
 			})
 		);
 
-		const mediasBatch = results.map(result => {
-			if (result.status === "fulfilled" && result.value) {
-				return result.value;
-			}
-		}) as Media[];
+		const mediasBatch = getFulfilledValues(results);
 
 		await database.write(() => database.batch(...mediasBatch));
 	};
@@ -78,15 +75,10 @@ export const useSync = () => {
 
 		// TODO do something with failed downloads;
 
-		const succesfullDownloadsResult = results.filter(
-			result => result.status === "fulfilled" && result.value
-		) as PromiseFulfilledResult<{
-			media: Media;
-			downloadedPath: string;
-		}>[];
+		const succesfullDownloads = getFulfilledValues(results);
 
-		const batchDownloadUpdates = succesfullDownloadsResult.map(result => {
-			const { media, downloadedPath } = result.value;
+		const batchDownloadUpdates = succesfullDownloads.map(result => {
+			const { media, downloadedPath } = result;
 			return media.prepareUpdate(updateMedia => {
 				updateMedia.downloaded = true;
 				updateMedia.downloadedPath = downloadedPath;
@@ -115,21 +107,13 @@ export const useSync = () => {
 					})
 				);
 
-				const postsBatch = resultsPosts.map(result => {
-					if (result.status === "fulfilled" && result.value) {
-						return result.value;
-					}
-				}) as Post[];
+				const postsBatch = getFulfilledValues(resultsPosts);
 
 				return postsBatch;
 			})
 		);
 
-		const batches = results.map(result => {
-			if (result.status === "fulfilled" && result.value) {
-				return result.value;
-			}
-		}) as Post[][];
+		const batches = getFulfilledValues(results);
 
 		await database.write(() => database.batch(...batches.flat()));
 	};
