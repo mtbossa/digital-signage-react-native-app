@@ -26,14 +26,19 @@ export const useSync = () => {
 						.fetch();
 
 					if (media) {
-						if (!media.downloaded && !mediaExists(media.filename)) {
-							const updatedMedia = await mediaDownloadHandler(media);
-							console.log("Local saved media", { updatedMedia });
+						const mediaFileExists = await mediaExists(media.filename);
+
+						// This is a insurance that the media file and data is always correct, because
+						// it could happen that the media download failed but downloaded was true,
+						// and vice-versa
+						if (!media.downloaded && mediaFileExists.exists) {
+							await media.setDownloadedPath(mediaFileExists.path);
+						} else if (!mediaFileExists.exists) {
+							await mediaDownloadHandler(media);
 						}
 					} else {
 						const createdMedia = await createMedia(mediaWithPosts);
-						const updatedMedia = await mediaDownloadHandler(createdMedia);
-						console.log("Newly created media", { updatedMedia });
+						await mediaDownloadHandler(createdMedia);
 					}
 				})
 			);
