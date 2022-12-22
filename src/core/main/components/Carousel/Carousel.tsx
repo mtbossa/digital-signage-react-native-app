@@ -15,6 +15,7 @@ function Carousel() {
 	const { sync } = useSync();
 	const { connect } = usePusherConnector();
 
+	const video = useRef<Video | null>(null);
 	const [currentShowablePosts, setCurrentShowablePosts] = useState<Map<number, PostWithMedia>>(
 		new Map()
 	);
@@ -102,9 +103,14 @@ function Carousel() {
 	};
 
 	const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-		if (isAVPlaybackStatusSuccess(status) && status.didJustFinish) {
-			console.log("video just finished");
+		if (isAVPlaybackStatusSuccess(status)) {
+			if (status.didJustFinish) {
 			handleNextPost();
+			}
+
+			if (status.isLoaded && !status.isPlaying && !status.isBuffering) {
+				video.current?.playAsync();
+			}
 		}
 	};
 
