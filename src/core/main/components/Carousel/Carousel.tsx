@@ -10,12 +10,23 @@ import { Post } from "intus-database/WatermelonDB/models/Post/Post";
 import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 import { Video } from "expo-av";
 import { useCarousel } from "intus-core/main/hooks/useCarousel";
+import {
+	PostWithMedia,
+	showablePostsWithMediaCustomQuery,
+} from "intus-database/WatermelonDB/models/Post/query/showablePostsWithMediaCustomQuery";
+import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
 
 function Carousel() {
 	const { setIsLoading } = useContext(AppContext);
 	const { sync } = useSync();
 	const { connect } = usePusherConnector();
-	const { currentPlayingMedia, startCarousel } = useCarousel();
+
+	const [currentShowablePosts, setCurrentShowablePosts] = useState<Map<number, PostWithMedia>>(
+		new Map()
+	);
+	// Current post being showed on the screen
+	const [showingPost, setShowingPost] = useState<PostWithMedia | null>(null);
+	const [currentPostIndex, setCurrentPostIndex] = useState<number>(0);
 
 	useEffect(() => {
 		(async () => {
@@ -27,23 +38,91 @@ function Carousel() {
 		})();
 	}, []);
 
-	const test = () => console.log("test");
+	const startCarousel = async () => {
+		while (true) {
+			console.log("------------------------------");
+			console.log("Checking for showable posts");
+
+			let showablePosts = await showablePostsWithMediaCustomQuery();
+
+			showablePosts.forEach(postWithMedia => {
+				const key = postWithMedia.post_api_id;
+				if (currentShowablePosts.has(key)) return;
+				setCurrentShowablePosts(new Map(currentShowablePosts.set(key, postWithMedia)));
+			});
+
+			console.log("Checking for showable finish");
+			console.log("------------------------------");
+			await new Promise(resolve => setTimeout(resolve, 15000));
+		}
+	};
+
+	useEffect(() => {
+		console.log("useEffect currentShowablePosts: ", { currentShowablePosts });
+	}, [currentShowablePosts]);
+
+	useEffect(() => {
+		if (currentShowablePosts.size === 0 && !showingPost) return;
+
+		if (!showingPost) {
+			console.log("HERE1");
+			setShowingPost({ ...getNextPost(showingPost) });
+			return;
+		}
+
+		console.log({ showingPost });
+
+		if (showingPost.type === "image") {
+			setTimeout(() => {
+				handleNextPost();
+			}, showingPost.expose_time);
+		} else {
+			// videoRef.current?.play();
+		}
+	}, [showingPost, currentShowablePosts]);
+
+	const handleNextPost = () => {
+		setShowingPost({ ...getNextPost(showingPost) });
+	};
+
+	const getNextPost = (post: PostWithMedia | null): PostWithMedia => {
+		if (!post) {
+			console.log("HERE2; ", [...currentShowablePosts][0][1]);
+			return [...currentShowablePosts][0][1];
+		}
+
+		const nextIndex = currentPostIndex + 1;
+
+		if (nextIndex > currentShowablePosts.size - 1) {
+			// We reach last post, so need to restart
+			setCurrentPostIndex(0);
+			return [...currentShowablePosts][0][1];
+		}
+		const nextPost = [...currentShowablePosts][nextIndex][1];
+
+		if (nextPost) {
+			setCurrentPostIndex(nextIndex);
+			return nextPost;
+		} else {
+			setCurrentPostIndex(0);
+			return [...currentShowablePosts][0][1];
+		}
+	};
 
 	return (
 		<>
 			<Text style={{ color: "white" }}>Carousel</Text>
 			<Button title="connect" onPress={connect} />
-			<Button title="test" onPress={test} />
-			{currentPlayingMedia && (
+			{showingPost && (
 				<>
-					{currentPlayingMedia?.type === "image" ? (
+					{showingPost?.type === "image" ? (
 						<Image
-							source={{ uri: currentPlayingMedia.downloadedPath }}
+							source={{ uri: showingPost.downloadedPath }}
 							style={{ width: "100%", height: "100%" }}
 						/>
-					) : currentPlayingMedia?.type === "video" ? (
+					) : showingPost?.type === "video" ? (
 						<Video
-							source={{ uri: currentPlayingMedia!.downloadedPath }}
+							source={{ uri: showingPost!.downloadedPath }}
 							style={{ width: "100%", height: "100%" }}
 						/>
 					) : (
