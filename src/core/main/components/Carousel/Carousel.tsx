@@ -1,20 +1,14 @@
 import React, { useEffect, useContext, useState } from "react";
 import { Button, Image, Text } from "react-native";
-import { Q } from "@nozbe/watermelondb";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useSync } from "intus-core/main/hooks/useSync";
 import { usePusherConnector } from "intus-core/main/hooks/usePusherConnector";
-import { database } from "intus-database/WatermelonDB";
-import { Post } from "intus-database/WatermelonDB/models/Post/Post";
-import { Media } from "intus-database/WatermelonDB/models/Media/Media";
-import { Video } from "expo-av";
-import { useCarousel } from "intus-core/main/hooks/useCarousel";
+import { AVPlaybackStatus, Video, AVPlaybackStatusSuccess } from "expo-av";
 import {
 	PostWithMedia,
 	showablePostsWithMediaCustomQuery,
 } from "intus-database/WatermelonDB/models/Post/query/showablePostsWithMediaCustomQuery";
-import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
 
 function Carousel() {
 	const { setIsLoading } = useContext(AppContext);
@@ -76,8 +70,6 @@ function Carousel() {
 			setTimeout(() => {
 				handleNextPost();
 			}, showingPost.expose_time);
-		} else {
-			// videoRef.current?.play();
 		}
 	}, [showingPost, currentShowablePosts]);
 
@@ -109,6 +101,17 @@ function Carousel() {
 		}
 	};
 
+	const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+		if (isAVPlaybackStatusSuccess(status) && status.didJustFinish) {
+			console.log("video just finished");
+			handleNextPost();
+		}
+	};
+
+	function isAVPlaybackStatusSuccess(status: AVPlaybackStatus): status is AVPlaybackStatusSuccess {
+		return (status as AVPlaybackStatusSuccess).didJustFinish !== undefined;
+	}
+
 	return (
 		<>
 			<Text style={{ color: "white" }}>Carousel</Text>
@@ -124,6 +127,8 @@ function Carousel() {
 						<Video
 							source={{ uri: showingPost!.downloadedPath }}
 							style={{ width: "100%", height: "100%" }}
+							onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+							shouldPlay
 						/>
 					) : (
 						<Text style={{ color: "white" }}>NULL</Text>
