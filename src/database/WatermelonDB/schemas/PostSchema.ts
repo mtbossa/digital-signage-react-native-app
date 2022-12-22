@@ -4,13 +4,17 @@ export const PostSchema = tableSchema({
 	name: "posts",
 	columns: [
 		{
-			name: "post_id",
+			name: "post_api_id",
 			type: "number",
 			isIndexed: true,
 		},
 		{
-			name: "media_id",
+			name: "media_api_id",
 			type: "number",
+		},
+		{
+			name: "media_id",
+			type: "string",
 		},
 		{
 			name: "start_time",

@@ -5,5 +5,5 @@ export const axiosClient = axios.create({
 	headers: {
 		Authorization: `Bearer ${API_TOKEN}`,
 	},
-	timeout: 10000, // ms = 10s
+	timeout: 1000, // ms = 10s
 });

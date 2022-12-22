@@ -100,9 +100,10 @@ export const useSync = () => {
 					mediaWithPosts.posts.map(async apiPost => {
 						const post = await findPostByPostId(apiPost.id);
 						if (post) {
-							return prepareUpdatePost(post, apiPost);
+							return prepareUpdatePost(post, apiPost, media.id);
 						} else {
-							return prepareCreatePost(apiPost);
+							console.log("HERE");
+							return prepareCreatePost(apiPost, media.id);
 						}
 					})
 				);

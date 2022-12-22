@@ -1,5 +1,6 @@
 import { Model } from "@nozbe/watermelondb";
 import { field, json, writer } from "@nozbe/watermelondb/decorators";
+import { Associations } from "@nozbe/watermelondb/Model";
 
 export class Media extends Model {
 	static table = "medias";
@@ -9,6 +10,10 @@ export class Media extends Model {
 	@field("type") type!: "video" | "image";
 	@field("downloaded") downloaded!: boolean;
 	@field("downloadedPath") downloadedPath!: string;
+
+	static associations: Associations = {
+		posts: { type: "has_many", foreignKey: "media_id" },
+	};
 
 	@writer async setDownloadedPath(downloadedPath: string) {
 		await this.update(media => {
