@@ -26,7 +26,7 @@ class CarouselService {
 
 			console.log("Checking for showable finish");
 			console.log("------------------------------");
-			await new Promise(resolve => setTimeout(resolve, 15000));
+			await new Promise(resolve => setTimeout(resolve, 10000));
 		}
 	};
 
