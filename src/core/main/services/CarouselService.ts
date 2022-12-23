@@ -36,7 +36,7 @@ class CarouselService {
 		const currentValue = this.carousel.next();
 
 		if (currentValue.done) {
-			this.carousel = this.carouselMap.values();
+			this.carousel = this.carouselMap.values(); // Resets carousel to first post, then enter here again
 			return this.getNextPost();
 		}
 
