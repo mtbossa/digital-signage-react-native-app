@@ -13,7 +13,7 @@ class CarouselService {
 			console.log("Checking for showable posts: ", new Date());
 
 			// All posts that fits showing logic and are not here yet
-			let showablePosts = await showablePostsWithMediaCustomQuery([...this.carouselMap.keys()]);
+			let showablePosts = await showablePostsWithMediaCustomQuery();
 			showablePosts.forEach(post => {
 				if (this.carouselMap.has(post.post_api_id)) return;
 				this.carouselMap.set(post.post_api_id, post);

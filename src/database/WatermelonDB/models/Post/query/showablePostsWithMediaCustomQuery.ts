@@ -9,9 +9,7 @@ export interface PostWithMedia {
 	type: "video" | "image";
 }
 
-export const showablePostsWithMediaCustomQuery = async (
-	currentShowingPostsIds: number[]
-): Promise<PostWithMedia[]> => {
+export const showablePostsWithMediaCustomQuery = async (): Promise<PostWithMedia[]> => {
 	// We return a copy of the array because WatermelonDB docs states that: ~
 	// "⚠️ You MUST NOT mutate returned objects. Doing so will corrupt the database."
 	// Ref: https://nozbe.github.io/WatermelonDB/Query.html#unsafe-fetch-raw
