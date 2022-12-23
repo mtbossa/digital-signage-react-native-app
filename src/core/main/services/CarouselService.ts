@@ -1,6 +1,5 @@
 import {
 	PostWithMedia,
-	removablePostsCustomQuery,
 	showablePostsWithMediaCustomQuery,
 } from "intus-database/WatermelonDB/models/Post/query/showablePostsWithMediaCustomQuery";
 

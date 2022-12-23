@@ -1,16 +1,10 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
-import { Button, Image, Text } from "react-native";
+import { Image, Text } from "react-native";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useSync } from "intus-core/main/hooks/useSync";
-import { usePusherConnector } from "intus-core/main/hooks/usePusherConnector";
 import { AVPlaybackStatus, Video, AVPlaybackStatusSuccess } from "expo-av";
-import {
-	PostWithMedia,
-	removablePostsCustomQuery,
-	showablePostsWithMediaCustomQuery,
-} from "intus-database/WatermelonDB/models/Post/query/showablePostsWithMediaCustomQuery";
-import { MediaWithPosts } from "intus-api/responses/DisplayPostsSyncResponse";
+import { PostWithMedia } from "intus-database/WatermelonDB/models/Post/query/showablePostsWithMediaCustomQuery";
 import CarouselService from "intus-core/main/services/CarouselService";
 
 function Carousel() {

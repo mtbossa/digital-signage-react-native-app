@@ -1,6 +1,5 @@
 import { Q } from "@nozbe/watermelondb";
 import { database } from "intus-database/WatermelonDB";
-import { Media } from "../../Media/Media";
 
 export interface PostWithMedia {
 	id: string;
