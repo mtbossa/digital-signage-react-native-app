@@ -16,14 +16,12 @@ class CarouselService {
 			// All posts that fits showing logic and are not here yet
 			let showablePosts = await showablePostsWithMediaCustomQuery([...this.carouselMap.keys()]);
 			showablePosts.forEach(post => {
+				if (this.carouselMap.has(post.post_api_id)) return;
 				this.carouselMap.set(post.post_api_id, post);
 			});
 
 			// All posts that are still inside current currentCarousel but should't be showing anymore
-			const deletablePosts = await removablePostsCustomQuery([...this.carouselMap.keys()]);
-			deletablePosts.forEach(post => {
-				this.carouselMap.delete(post.post_api_id);
-			});
+			this.deleteNotShowableAnymore(showablePosts);
 
 			console.log("this.carouselMap: ", this.carouselMap);
 
@@ -44,6 +42,17 @@ class CarouselService {
 		}
 
 		return currentValue.value;
+	}
+
+	private deleteNotShowableAnymore(foundShowablePosts: PostWithMedia[]): void {
+		this.carouselMap.forEach((post, keyAsPostApiId) => {
+			const currentPostIsNotOnFoundPosts =
+				foundShowablePosts.findIndex(foundPost => foundPost.post_api_id === keyAsPostApiId) === -1;
+
+			if (currentPostIsNotOnFoundPosts) {
+				this.carouselMap.delete(keyAsPostApiId);
+			}
+		});
 	}
 }
 
