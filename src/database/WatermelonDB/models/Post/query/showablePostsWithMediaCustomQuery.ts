@@ -35,7 +35,7 @@ export const showablePostsWithMediaCustomQuery = async (
 					WHERE
 						p.post_api_id NOT IN (${currentShowingPostsIds.join(",")})
 						AND (
-							start_date <= date('now')
+							p.start_date <= date('now')
 							AND p.end_date >= date('now')
 							AND p.start_time <= time('now')
 							AND p.end_time > time('now')
