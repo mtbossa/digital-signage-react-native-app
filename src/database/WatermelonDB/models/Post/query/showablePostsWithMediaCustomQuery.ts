@@ -21,6 +21,7 @@ export const showablePostsWithMediaCustomQuery = async (
 		...((await database
 			.get("posts")
 			.query(
+				// This query handles all cases, when start_time < or > or = to then end_time
 				Q.unsafeSqlQuery(
 					`
 					SELECT
