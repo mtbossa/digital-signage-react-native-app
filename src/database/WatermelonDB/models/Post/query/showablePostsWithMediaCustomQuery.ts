@@ -24,23 +24,33 @@ export const showablePostsWithMediaCustomQuery = async (
 				Q.unsafeSqlQuery(
 					`
 					SELECT
-						p.id,
-						p.post_api_id,
-						p.expose_time,
-						m.downloadedPath,
-						m.type
-					FROM
-						posts p
-						LEFT JOIN medias m ON m.media_id = p.media_api_id
-					WHERE
-						p.post_api_id NOT IN (${currentShowingPostsIds.join(",")})
-						AND (
-							p.start_date <= date('now')
-							AND p.end_date >= date('now')
-							AND p.start_time <= time('now')
-							AND p.end_time > time('now')
-							AND m.downloaded = true
-						)
+					p.id,
+					p.post_api_id,
+					p.expose_time,
+					m.downloadedPath,
+					m.type
+				FROM
+					posts p
+					LEFT JOIN medias m ON m.media_id = p.media_api_id
+				WHERE
+					p.post_api_id NOT IN ()
+					AND m.downloaded = true
+					AND p.start_date <= date('now')
+					AND (
+						CASE
+							WHEN p.start_time < p.end_time THEN (
+								p.start_time <= time('now')
+								AND p.end_time > time('now')
+								AND p.end_date >= date('now')
+							)
+							WHEN p.start_time > p.end_time THEN (
+								P.end_date > date('now')
+								AND time('now') NOT BETWEEN p.end_time
+								AND p.start_time
+							)
+							ELSE (1)
+						END
+					)
       		`
 				)
 			)
