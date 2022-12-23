@@ -72,10 +72,6 @@ function Carousel() {
 			if (status.didJustFinish) {
 				handleNextPost();
 			}
-
-			if (status.isLoaded && !status.isBuffering) {
-				video.current?.playAsync();
-			}
 		}
 	};
 
@@ -100,6 +96,7 @@ function Carousel() {
 							onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
 							shouldPlay
 							isMuted
+							isLooping
 						/>
 					) : (
 						<Text style={{ color: "white" }}>NULL</Text>
