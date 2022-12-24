@@ -59,10 +59,6 @@ export const deleteFile = async (path: string) => {
 };
 
 export const makeDownloadPath = async (filename: string) => {
-	const { exists } = await FileSystem.getInfoAsync(MEDIAS_DIR);
-	if (!exists) {
-		await createMediasDirectory();
-	}
 	return `${MEDIAS_DIR}/${filename}`;
 };
 
@@ -74,7 +70,12 @@ export const mediaExists = async (filename: string) => {
 	};
 };
 
-const createMediasDirectory = async () => await FileSystem.makeDirectoryAsync(MEDIAS_DIR);
+export const createMediasDirectory = async () => {
+	const { exists } = await FileSystem.getInfoAsync(MEDIAS_DIR);
+	if (!exists) {
+		await FileSystem.makeDirectoryAsync(MEDIAS_DIR);
+	}	
+};
 
 const awaitableTimeout = async (timeoutMs: number) =>
 	new Promise((res, _) => {

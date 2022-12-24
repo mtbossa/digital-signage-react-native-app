@@ -20,6 +20,7 @@ function Carousel() {
 		(async () => {
 			setIsLoading(true);
 			await sync();
+			setIsLoading(false);
 
 			CarouselService.startCarousel();
 		})();
@@ -57,13 +58,13 @@ function Carousel() {
 
 			clearInterval(interval);
 			setShowingPost(nextPost);
-			setIsLoading(false);
 		}, 5000);
 	};
 
 	const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
 		if (isAVPlaybackStatusSuccess(status)) {
 			if (status.didJustFinish) {
+				console.log("Video finished");
 				handleNextPost();
 			}
 		}

@@ -9,6 +9,7 @@ import { colors } from "intus-styles/Colors";
 import { useAuth } from "intus-core/auth/hooks/useAuth";
 import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import { Carousel } from "../Carousel";
+import { createMediasDirectory } from "intus-core/main/services/DownloadService";
 
 function Main() {
 	const { isAuth, setIsAuth, isLoading, setIsLoading } = useContext(AppContext);
@@ -17,6 +18,7 @@ function Main() {
 
 	useEffect(() => {
 		(async () => {
+			await createMediasDirectory();
 			const isAlreadyAuth = await getIsAuth();
 			isAlreadyAuth && setIsAuth(true);
 			setIsLoading(false);
