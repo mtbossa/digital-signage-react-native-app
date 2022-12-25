@@ -61,7 +61,6 @@ export const usePusherConnector = () => {
 		const data = JSON.parse(event.data) as Notification;
 
 		if (data.type === "App\\Notifications\\DisplayPost\\PostCreated") {
-			console.log("PostCreated: ", data);
 			handlePostCreatedNotification(data as PostCreatedNotification);
 		}
 
