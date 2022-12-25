@@ -3,6 +3,7 @@ import { broadcastingAuthRequest } from "intus-api/requests/BroadcastingAuthRequ
 import { Notification } from "intus-api/websockets/Notification";
 import { PostCreatedNotification } from "intus-api/websockets/notifications/PostCreated";
 import { PostDeletedNotification } from "intus-api/websockets/notifications/PostDeleted";
+import { PostUpdatedNotification } from "intus-api/websockets/notifications/PostUpdated";
 import { getCurrentDisplayChannelName } from "intus-api/websockets/PrivateChannels";
 import { database } from "intus-database/WatermelonDB";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
@@ -10,6 +11,8 @@ import { destroyMedia } from "intus-database/WatermelonDB/models/Media/delete/de
 import { findMediaByMediaId } from "intus-database/WatermelonDB/models/Media/query/findMediaByMediaId";
 import { createPost } from "intus-database/WatermelonDB/models/Post/create/createPost";
 import { destroyPostByPostApiId } from "intus-database/WatermelonDB/models/Post/delete/destroyPost";
+import { findPostByPostId } from "intus-database/WatermelonDB/models/Post/query/findPostByPostId";
+import { updatePost } from "intus-database/WatermelonDB/models/Post/update/updatePost";
 import { mediaDownloadHandler } from "../services/DownloadService";
 
 const handleAuthorization = async (channelName: string, socketId: string) => {
@@ -67,8 +70,11 @@ export const usePusherConnector = () => {
 		}
 
 		if (data.type === "App\\Notifications\\DisplayPost\\PostDeleted") {
-			console.log("PostDeleted: ", data);
 			handlePostDeletedNotification(data as PostDeletedNotification);
+		}
+
+		if (data.type === "App\\Notifications\\DisplayPost\\PostUpdated") {
+			handlePostUpdatedNotification(data as PostUpdatedNotification);
 		}
 	};
 
@@ -101,6 +107,29 @@ export const usePusherConnector = () => {
 		await destroyPostByPostApiId(post_id);
 		if (canDeleteMedia) {
 			await destroyMedia(media_id);
+		}
+	};
+
+	const handlePostUpdatedNotification = async (
+		postUpdatedNotification: PostUpdatedNotification
+	) => {
+		const { post } = postUpdatedNotification;
+		const localPostData = { ...post, media_id: post.media.id, recurrence: post.recurrence };
+
+		const foundMedia = await findMediaByMediaId(post.media.id);
+		const foundPost = await findPostByPostId(post.id);
+
+		if (foundMedia) {
+			await updatePost(foundPost!, localPostData, foundMedia.id);
+		} else {
+			const createdMedia = await createMedia(post.media);
+			try {
+				const { downloadedPath } = await mediaDownloadHandler(createdMedia);
+				await createdMedia.setDownloadedPath(downloadedPath);
+				await updatePost(foundPost!, localPostData, createdMedia.id);
+			} catch {
+				// TODO do something if cant download media
+			}
 		}
 	};
 
