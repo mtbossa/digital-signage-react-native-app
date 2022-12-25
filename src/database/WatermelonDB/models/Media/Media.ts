@@ -9,7 +9,7 @@ export class Media extends Model {
 	@field("filename") filename!: string;
 	@field("type") type!: "video" | "image";
 	@field("downloaded") downloaded!: boolean;
-	@field("downloadedPath") downloadedPath!: string;
+	@field("downloadedPath") downloadedPath!: string | null;
 
 	static associations: Associations = {
 		posts: { type: "has_many", foreignKey: "media_id" },

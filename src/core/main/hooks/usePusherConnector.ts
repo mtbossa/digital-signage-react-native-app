@@ -6,8 +6,10 @@ import { PostDeletedNotification } from "intus-api/websockets/notifications/Post
 import { getCurrentDisplayChannelName } from "intus-api/websockets/PrivateChannels";
 import { database } from "intus-database/WatermelonDB";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
+import { destroyMedia } from "intus-database/WatermelonDB/models/Media/delete/destroyMedia";
 import { findMediaByMediaId } from "intus-database/WatermelonDB/models/Media/query/findMediaByMediaId";
 import { createPost } from "intus-database/WatermelonDB/models/Post/create/createPost";
+import { destroyPostByPostApiId } from "intus-database/WatermelonDB/models/Post/delete/destroyPost";
 import { mediaDownloadHandler } from "../services/DownloadService";
 
 const handleAuthorization = async (channelName: string, socketId: string) => {
@@ -66,7 +68,7 @@ export const usePusherConnector = () => {
 
 		if (data.type === "App\\Notifications\\DisplayPost\\PostDeleted") {
 			console.log("PostDeleted: ", data);
-			const postDeleted = data as PostDeletedNotification;
+			handlePostDeletedNotification(data as PostDeletedNotification);
 		}
 	};
 
@@ -83,11 +85,22 @@ export const usePusherConnector = () => {
 		} else {
 			const createdMedia = await createMedia(post.media);
 			try {
-				await mediaDownloadHandler(createdMedia);
+				const { downloadedPath } = await mediaDownloadHandler(createdMedia);
+				await createdMedia.setDownloadedPath(downloadedPath);
 				await createPost(localPostData, createdMedia.id);
 			} catch {
 				// TODO do something if cant download media
 			}
+		}
+	};
+
+	const handlePostDeletedNotification = async (
+		postDeletedNotification: PostDeletedNotification
+	) => {
+		const { canDeleteMedia, media_id, post_id } = postDeletedNotification;
+		await destroyPostByPostApiId(post_id);
+		if (canDeleteMedia) {
+			await destroyMedia(media_id);
 		}
 	};
 
