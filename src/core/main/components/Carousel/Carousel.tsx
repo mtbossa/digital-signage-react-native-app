@@ -6,10 +6,12 @@ import { useSync } from "intus-core/main/hooks/useSync";
 import { AVPlaybackStatus, Video, AVPlaybackStatusSuccess } from "expo-av";
 import { PostWithMedia } from "intus-database/WatermelonDB/models/Post/query/showablePostsWithMediaCustomQuery";
 import CarouselService from "intus-core/main/services/CarouselService";
+import { usePusherConnector } from "intus-core/main/hooks/usePusherConnector";
 
 function Carousel() {
 	const { setIsLoading } = useContext(AppContext);
 	const { sync } = useSync();
+	const { connect } = usePusherConnector();
 
 	const video = useRef<Video | null>(null);
 
@@ -20,6 +22,7 @@ function Carousel() {
 		(async () => {
 			setIsLoading(true);
 			await sync();
+			connect();
 			setIsLoading(false);
 
 			CarouselService.startCarousel();

@@ -23,7 +23,7 @@ export interface Post {
 
 interface Recurrence {
 	id: number;
-	isoweekday: number;
-	day: null;
-	month: null;
+	isoweekday: number | null;
+	day: number | null;
+	month: number | null;
 }
