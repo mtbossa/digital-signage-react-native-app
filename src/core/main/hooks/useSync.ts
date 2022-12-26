@@ -23,16 +23,11 @@ import { getFulfilledValues } from "intus-core/shared/helpers/functions/getFulfi
 export const useSync = () => {
 	const sync = async () => {
 		try {
-			const {
-				data: { data: mediasWithPosts },
-			} = await displayPostsSyncRequest();
+			const response = await displayPostsSyncRequest();
 
-			await createAndUpdateMedias(mediasWithPosts);
+			await createAndUpdateMedias(response.data.available);
 			await checkAndDownloadMediasFiles();
-			await createAndUpdatePosts(mediasWithPosts);
-
-			// // TODO compare the returned medias from sync request with the currently stored medias
-			// // and delete the ones that didn't come with this request, since it means that they're expired.
+			await createAndUpdatePosts(response.data.available);
 		} catch (err) {
 			if (isAxiosError(err)) {
 				console.error("Axios could not make the request");

@@ -1,5 +1,7 @@
 export interface DisplayPostsSyncResponse {
-	data: MediaWithPosts[];
+	available: MediaWithPosts[];
+	deletable_posts_ids: number[];
+	deletable_medias_ids: number[];
 }
 
 export interface MediaWithPosts {
