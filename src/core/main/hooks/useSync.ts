@@ -19,16 +19,20 @@ import { prepareCreatePost } from "intus-database/WatermelonDB/models/Post/creat
 import { prepareUpdateMedia } from "intus-database/WatermelonDB/models/Media/update/prepareUpdateMedia";
 import { prepareCreateMedia } from "intus-database/WatermelonDB/models/Media/create/prepareCreateMedia";
 import { getFulfilledValues } from "intus-core/shared/helpers/functions/getFulfilledValues";
+import { getAllApiPostsIds } from "intus-database/WatermelonDB/models/Post/query/getAllApiPostsIds";
 
 export const useSync = () => {
 	const sync = async () => {
 		try {
-			const response = await displayPostsSyncRequest();
+			console.log("oi");
+			const postsApiIds = await getAllApiPostsIds();
+			const response = await displayPostsSyncRequest(postsApiIds);
 
 			await createAndUpdateMedias(response.data.available);
 			await checkAndDownloadMediasFiles();
 			await createAndUpdatePosts(response.data.available);
 		} catch (err) {
+			console.log(err);
 			if (isAxiosError(err)) {
 				console.error("Axios could not make the request");
 			}
