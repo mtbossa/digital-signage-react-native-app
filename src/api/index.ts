@@ -1,5 +1,7 @@
 import axios from "axios";
-import { API_URL, API_TOKEN } from "@env";
+const API_URL = "http://192.168.1.99";
+const API_TOKEN = "XXX";
+
 export const axiosClient = axios.create({
 	baseURL: `${API_URL}/`,
 	headers: {
