@@ -17,6 +17,7 @@ module.exports = function (api) {
 			],
 			["@babel/plugin-proposal-decorators", { legacy: true }],
 			["module:react-native-dotenv"],
+			["transform-inline-environment-variables"],
 		],
 	};
 };
