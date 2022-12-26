@@ -23,7 +23,6 @@ function Carousel() {
 			setIsLoading(true);
 			await sync();
 			connect();
-			setIsLoading(false);
 
 			CarouselService.startCarousel();
 		})();
@@ -61,6 +60,7 @@ function Carousel() {
 
 			clearInterval(interval);
 			setShowingPost(nextPost);
+			setIsLoading(false);
 		}, 5000);
 	};
 
