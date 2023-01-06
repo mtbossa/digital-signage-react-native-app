@@ -21,10 +21,12 @@ function Carousel() {
 	useEffect(() => {
 		(async () => {
 			setIsLoading(true);
+			
 			await sync();
 			connect();
-
 			CarouselService.startCarousel();
+			
+			setIsLoading(false);
 		})();
 	}, []);
 
@@ -59,8 +61,7 @@ function Carousel() {
 			if (!nextPost) return;
 
 			clearInterval(interval);
-			setShowingPost(nextPost);
-			setIsLoading(false);
+			setShowingPost(nextPost);		
 		}, 5000);
 	};
 
