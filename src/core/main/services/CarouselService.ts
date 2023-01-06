@@ -53,6 +53,10 @@ class CarouselService {
 			}
 		});
 	}
+
+	public removePostFromCarousel(postApiId: number) {
+		this.carouselMap.delete(postApiId);
+	}
 }
 
 export default new CarouselService();

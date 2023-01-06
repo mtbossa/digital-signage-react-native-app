@@ -13,6 +13,7 @@ import { createPost } from "intus-database/WatermelonDB/models/Post/create/creat
 import { destroyPostByPostApiId } from "intus-database/WatermelonDB/models/Post/delete/destroyPost";
 import { findPostByPostId } from "intus-database/WatermelonDB/models/Post/query/findPostByPostId";
 import { updatePost } from "intus-database/WatermelonDB/models/Post/update/updatePost";
+import CarouselService from "../services/CarouselService";
 import { mediaDownloadHandler } from "../services/DownloadService";
 
 const handleAuthorization = async (channelName: string, socketId: string) => {
@@ -131,6 +132,8 @@ export const usePusherConnector = () => {
 				// TODO do something if cant download media
 			}
 		}
+
+		CarouselService.removePostFromCarousel(foundPost!.post_api_id);
 	};
 
 	return {
