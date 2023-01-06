@@ -20,14 +20,17 @@ import { prepareUpdateMedia } from "intus-database/WatermelonDB/models/Media/upd
 import { prepareCreateMedia } from "intus-database/WatermelonDB/models/Media/create/prepareCreateMedia";
 import { getFulfilledValues } from "intus-core/shared/helpers/functions/getFulfilledValues";
 import { getAllApiPostsIds } from "intus-database/WatermelonDB/models/Post/query/getAllApiPostsIds";
+import { destroyManyMedias } from "intus-database/WatermelonDB/models/Media/delete/destroyManyMedias";
+import { destroyManyPosts } from "intus-database/WatermelonDB/models/Post/delete/destroyManyPosts";
 
 export const useSync = () => {
 	const sync = async () => {
 		try {
-			console.log("oi");
 			const postsApiIds = await getAllApiPostsIds();
 			const response = await displayPostsSyncRequest(postsApiIds);
 
+			await deleteMedias(response.data.deletable_medias_ids);
+			await deletePosts(response.data.deletable_posts_ids);
 			await createAndUpdateMedias(response.data.available);
 			await checkAndDownloadMediasFiles();
 			await createAndUpdatePosts(response.data.available);
@@ -40,6 +43,20 @@ export const useSync = () => {
 
 		console.log("Sync is over");
 		return true;
+	};
+
+	const deleteMedias = async (deletableMediasIds: number[]) => {
+		if (deletableMediasIds.length === 0) {
+			return;
+		}
+		await destroyManyMedias(deletableMediasIds);
+	};
+
+	const deletePosts = async (deletablePostsIds: number[]) => {
+		if (deletablePostsIds.length === 0) {
+			return;
+		}
+		await destroyManyPosts(deletablePostsIds);
 	};
 
 	const createAndUpdateMedias = async (mediasWithPosts: MediaWithPosts[]) => {
