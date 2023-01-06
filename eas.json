@@ -7,6 +7,12 @@
         "APP_ENV": "development"
       }
     },
+    "development-prod": {
+      "distribution": "internal",
+      "env": {
+        "APP_ENV": "development"
+      }
+    },
     "staging": {
       "distribution": "internal",
       "android": {
