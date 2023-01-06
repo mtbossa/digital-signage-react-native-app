@@ -5,6 +5,7 @@ import { findMediaByMediaId } from "../query/findMediaByMediaId";
 
 export const destroyMedia = async (mediaApiId: number) => {
 	const media = await findMediaByMediaId(mediaApiId);
-	await FileSystem.deleteAsync(media!.downloadedPath ?? "", { idempotent: true });
-	return await database.write(async () => await media!.destroyPermanently());
+	if (!media) return;
+	await FileSystem.deleteAsync(media.downloadedPath ?? "", { idempotent: true });
+	return await database.write(async () => await media.destroyPermanently());
 };
