@@ -14,11 +14,8 @@ export const destroyManyMedias = async (mediasApiIds: number[]) => {
 		})
 	);
 
-	console.log({ result });
-
 	const deletedMediasApiIds = getFulfilledValues(result);
 	const joined = deletedMediasApiIds.join(",");
-	console.log({ mediasApiIds, deletedMediasApiIds, joined });
 
 	if (deletedMediasApiIds.length === 0) {
 		// This ensures we never call the below SQL with IN (), since it would delete every media.
