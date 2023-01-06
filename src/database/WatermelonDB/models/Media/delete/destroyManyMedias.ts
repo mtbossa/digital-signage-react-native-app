@@ -3,24 +3,28 @@ import { getFulfilledValues } from "intus-core/shared/helpers/functions/getFulfi
 import { database } from "intus-database/WatermelonDB";
 import { findMediaByMediaId } from "../query/findMediaByMediaId";
 export const destroyManyMedias = async (mediasApiIds: number[]) => {
-	const result = await Promise.allSettled(
-		mediasApiIds.map(async mediaApiId => {
-			const media = await findMediaByMediaId(mediaApiId);
-			if (!media)  {
-				throw "Media already deleted";
-			}
-			FileSystem.deleteAsync(media.downloadedPath ?? "", { idempotent: true });
-			return mediaApiId;
-		})
-	);
+	const deletedMediasIds: number[] = [];
 
-	const deletedMediasApiIds = getFulfilledValues(result);
-	const joined = deletedMediasApiIds.join(",");
+	for (const mediaApiId of mediasApiIds) {
+		const media = await findMediaByMediaId(mediaApiId);
+		if (!media) {
+			continue;
+		}
 
-	if (deletedMediasApiIds.length === 0) {
+		try {
+			await FileSystem.deleteAsync(media.downloadedPath ?? "");
+			deletedMediasIds.push(mediaApiId);
+		} catch {
+			// Not able to delete media, so we don't delete it from database, so later we can check for deletion again.
+		}
+	}
+
+	if (deletedMediasIds.length === 0) {
 		// This ensures we never call the below SQL with IN (), since it would delete every media.
 		return;
 	}
+
+	const joined = deletedMediasIds.join(",");
 
 	await database.write(
 		async () =>

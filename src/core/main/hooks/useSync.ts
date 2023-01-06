@@ -60,40 +60,38 @@ export const useSync = () => {
 	};
 
 	const createAndUpdateMedias = async (mediasWithPosts: MediaWithPosts[]) => {
-		const results = await Promise.allSettled(
-			mediasWithPosts.map(async mediaWithPosts => {
-				const media = await findMediaByMediaId(mediaWithPosts.id);
-				if (media) {
-					return prepareUpdateMedia(media, mediaWithPosts);
-				} else {
-					return prepareCreateMedia(mediaWithPosts);
-				}
-			})
-		);
+		const mediasBatch: Media[] = [];
 
-		const mediasBatch = getFulfilledValues(results);
+		for (const mediaWithPosts of mediasWithPosts) {
+			const media = await findMediaByMediaId(mediaWithPosts.id);
+			if (media) {
+				mediasBatch.push(prepareUpdateMedia(media, mediaWithPosts));
+			} else {
+				mediasBatch.push(prepareCreateMedia(mediaWithPosts));
+			}
+		}
 
 		await database.write(() => database.batch(...mediasBatch));
 	};
 
 	const checkAndDownloadMediasFiles = async () => {
 		const allMedias = await database.get<Media>("medias").query().fetch();
+		const succesfullDownloadsNew: {
+			media: Media;
+			downloadedPath: string;
+		}[] = [];
+		const failedDownloadsNew: any[] = [];
 
-		const results = await Promise.allSettled(
-			allMedias.map(async media => {
-				return await mediaDownloadHandler(media);
-			})
-		);
+		for (const media of allMedias) {
+			try {
+				const result = await mediaDownloadHandler(media);
+				succesfullDownloadsNew.push(result);
+			} catch (e) {
+				failedDownloadsNew.push(e);
+			}
+		}
 
-		const failedDownloads = results.filter(
-			result => result.status === "rejected"
-		) as PromiseRejectedResult[];
-
-		// TODO do something with failed downloads;
-
-		const succesfullDownloads = getFulfilledValues(results);
-
-		const batchDownloadUpdates = succesfullDownloads.map(result => {
+		const batchDownloadUpdates = succesfullDownloadsNew.map(result => {
 			const { media, downloadedPath } = result;
 			return media.prepareUpdate(updateMedia => {
 				updateMedia.downloaded = true;
@@ -105,34 +103,26 @@ export const useSync = () => {
 	};
 
 	const createAndUpdatePosts = async (mediasWithPosts: MediaWithPosts[]) => {
-		const results = await Promise.allSettled(
-			mediasWithPosts.map(async mediaWithPosts => {
-				const media = await findMediaByMediaId(mediaWithPosts.id);
-				if (!media) {
-					throw new Error("Media not created");
+		const postBatches: Post[] = [];
+
+		for (const mediaWithPosts of mediasWithPosts) {
+			const media = await findMediaByMediaId(mediaWithPosts.id);
+			if (!media) {
+				// TODO do something if media is not created
+				continue;
+			}
+
+			for (const apiPost of mediaWithPosts.posts) {
+				const post = await findPostByPostId(apiPost.id);
+				if (post) {
+					postBatches.push(prepareUpdatePost(post, apiPost, media.id));
+				} else {
+					postBatches.push(prepareCreatePost(apiPost, media.id));
 				}
+			}
+		}
 
-				const resultsPosts = await Promise.allSettled(
-					mediaWithPosts.posts.map(async apiPost => {
-						const post = await findPostByPostId(apiPost.id);
-						if (post) {
-							return prepareUpdatePost(post, apiPost, media.id);
-						} else {
-							console.log("HERE");
-							return prepareCreatePost(apiPost, media.id);
-						}
-					})
-				);
-
-				const postsBatch = getFulfilledValues(resultsPosts);
-
-				return postsBatch;
-			})
-		);
-
-		const batches = getFulfilledValues(results);
-
-		await database.write(() => database.batch(...batches.flat()));
+		await database.write(() => database.batch(...postBatches));
 	};
 
 	return {
