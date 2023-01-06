@@ -1,6 +1,7 @@
 import { database } from "intus-database/WatermelonDB";
 import { Post as APIPost } from "intus-api/responses/DisplayPostsSyncResponse";
 import { Post } from "../Post";
+import CarouselService from "intus-core/main/services/CarouselService";
 
 interface UpdatePost {
 	id: number;
@@ -35,6 +36,9 @@ export const updatePost = async (post: Post, apiPost: UpdatePost, localMediaId: 
 		});
 
 		console.log("Post updated: ", updatedPost);
+
+		// When a post is updated, always remove from carousel so get updated values next time
+		CarouselService.removePostFromCarousel(apiPost.id);
 
 		return updatedPost;
 	});

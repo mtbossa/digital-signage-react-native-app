@@ -8,9 +8,11 @@ import { getCurrentDisplayChannelName } from "intus-api/websockets/PrivateChanne
 import { database } from "intus-database/WatermelonDB";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
 import { destroyMedia } from "intus-database/WatermelonDB/models/Media/delete/destroyMedia";
+import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 import { findMediaByMediaId } from "intus-database/WatermelonDB/models/Media/query/findMediaByMediaId";
 import { createPost } from "intus-database/WatermelonDB/models/Post/create/createPost";
 import { destroyPostByPostApiId } from "intus-database/WatermelonDB/models/Post/delete/destroyPost";
+import { Post } from "intus-database/WatermelonDB/models/Post/Post";
 import { findPostByPostId } from "intus-database/WatermelonDB/models/Post/query/findPostByPostId";
 import { updatePost } from "intus-database/WatermelonDB/models/Post/update/updatePost";
 import CarouselService from "../services/CarouselService";
@@ -121,19 +123,28 @@ export const usePusherConnector = () => {
 		const foundPost = await findPostByPostId(post.id);
 
 		if (foundMedia) {
-			await updatePost(foundPost!, localPostData, foundMedia.id);
+
+			if (foundPost) {
+				await updatePost(foundPost!, localPostData, foundMedia.id);
+			} else {
+				await createPost(localPostData, foundMedia.id);
+			}
 		} else {
 			const createdMedia = await createMedia(post.media);
 			try {
 				const { downloadedPath } = await mediaDownloadHandler(createdMedia);
 				await createdMedia.setDownloadedPath(downloadedPath);
-				await updatePost(foundPost!, localPostData, createdMedia.id);
+
+				if (foundPost) {
+					await updatePost(foundPost!, localPostData, createdMedia.id);
+				} else {
+					await createPost(localPostData, createdMedia.id)
+				}
 			} catch {
 				// TODO do something if cant download media
 			}
 		}
 
-		CarouselService.removePostFromCarousel(foundPost!.post_api_id);
 	};
 
 	return {
