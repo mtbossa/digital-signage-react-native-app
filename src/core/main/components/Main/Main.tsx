@@ -10,17 +10,21 @@ import { useAuth } from "intus-core/auth/hooks/useAuth";
 import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import { Carousel } from "../Carousel";
 import { createMediasDirectory } from "intus-core/main/services/DownloadService";
+import { IntusAPIClient } from "intus-api/IntusAPIClient";
 
 function Main() {
 	const { isAuth, setIsAuth, isLoading, setIsLoading } = useContext(AppContext);
 
-	const { isAuth: getIsAuth } = useAuth();
+	const { getAPIToken } = useAuth();
 
 	useEffect(() => {
 		(async () => {
 			await createMediasDirectory();
-			const isAlreadyAuth = await getIsAuth();
-			isAlreadyAuth && setIsAuth(true);
+			const apiToken = await getAPIToken();
+			if (apiToken) {
+				IntusAPIClient.setApiToken(apiToken);
+				setIsAuth(true);
+			}
 			setIsLoading(false);
 		})();
 	}, []);

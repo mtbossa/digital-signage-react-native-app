@@ -1,9 +1,8 @@
-import { DisplayPostsSyncResponse } from "intus-api/responses/DisplayPostsSyncResponse";
+import { IntusAPIClient } from "intus-api/IntusAPIClient";
 import { MediaDownloadTempURLResponse } from "intus-api/responses/MediaDownloadTempURLResponse";
-import { axiosClient } from "..";
 
 export const mediaDownloadTempURLRequest = async (filename: string) => {
-	return await axiosClient.get<MediaDownloadTempURLResponse>(
+	return await IntusAPIClient.authRequest.get<MediaDownloadTempURLResponse>(
 		`api/media/${filename}/download?temp_url=true`
 	);
 };

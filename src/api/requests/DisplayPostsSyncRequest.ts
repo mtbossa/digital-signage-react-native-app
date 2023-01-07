@@ -1,6 +1,6 @@
+import { IntusAPIClient } from "intus-api/IntusAPIClient";
 import { DisplayPostsSyncResponse } from "intus-api/responses/DisplayPostsSyncResponse";
 import { transformToArrayQueryParam } from "intus-core/shared/helpers/functions/transformToArrayQueryParam";
-import { axiosClient } from "..";
 
 export const displayPostsSyncRequest = async (currentStoredPostsIds: number[]) => {
 	let idsQuery = transformToArrayQueryParam("posts_ids", currentStoredPostsIds);
@@ -9,5 +9,7 @@ export const displayPostsSyncRequest = async (currentStoredPostsIds: number[]) =
 		idsQuery = "posts_ids[]=";
 	}
 
-	return await axiosClient.get<DisplayPostsSyncResponse>(`api/display/1/posts/sync?${idsQuery}`);
+	return await IntusAPIClient.authRequest.get<DisplayPostsSyncResponse>(
+		`api/display/1/posts/sync?${idsQuery}`
+	);
 };
