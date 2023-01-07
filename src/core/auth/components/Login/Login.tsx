@@ -1,5 +1,13 @@
-import React, { useContext, useState } from "react";
-import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useContext, useRef, useState } from "react";
+import {
+	Button,
+	GestureResponderEvent,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableHighlight,
+	View,
+} from "react-native";
 import Constants from "expo-constants";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
@@ -9,6 +17,7 @@ import { IntusAPIClient } from "intus-api/IntusAPIClient";
 
 function Login() {
 	const [token, setToken] = useState("");
+	const inputRef = useRef<TextInput>(null);
 
 	const { setIsAuth } = useContext(AppContext);
 	const { setItem } = useStorage();
@@ -25,17 +34,32 @@ function Login() {
 		}
 	};
 
+	const onFocus = () => {
+		inputRef!.current!.focus();
+	};
+
+	const onBlur = () => {
+		inputRef!.current!.blur();
+	};
+
 	return (
 		<View style={style.container}>
 			<View style={style.loginCard}>
 				<Text style={[style.label, style.textWhite]}>API_URL: {API_URL}</Text>
 				<Text style={[style.label, style.textWhite]}>Insira o token recebido</Text>
-				<TextInput
-					style={[style.input, style.textWhite]}
-					placeholderTextColor={"grey"}
-					placeholder="Token"
-					onChangeText={text => setToken(text)}
-				/>
+				<TouchableHighlight onPress={onFocus} onBlur={onBlur}>
+					<TextInput
+						ref={inputRef}
+						style={[style.input, style.textWhite]}
+						placeholderTextColor={"grey"}
+						placeholder="Token"
+						autoFocus
+						onChangeText={text => {
+							console.log({ text });
+							setToken(text);
+						}}
+					/>
+				</TouchableHighlight>
 				<View style={style.loginButtonWrapper}>
 					<Button onPress={login} title="Login"></Button>
 				</View>
