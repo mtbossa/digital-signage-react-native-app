@@ -3,7 +3,7 @@ dotenv.config();
 
 // Reference: https://docs.expo.dev/build-reference/variables/
 let Config = {
-	apiUrl: process.env.API_URL,
+	apiUrl: process.env.API_URL ?? "http://localhost:8080",
 	pusherAppKey: process.env.DEVELOPMENT_PUSHER_APP_KEY,
 	pusherAppCluster: process.env.DEVELOPMENT_PUSHER_APP_CLUSTER,
 };

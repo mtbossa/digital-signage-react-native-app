@@ -4,7 +4,7 @@ import Constants from "expo-constants";
 class IntusAPIClient {
 	private TIMEOUT = 10000; // ms = 10s
 	private API_TOKEN: string | null = null;
-	API_URL = Constants.expoConfig?.extra?.apiUrl ?? process.env.API_URL ?? "localhost";
+	API_URL = Constants.expoConfig?.extra?.apiUrl ?? "http://localhost:8080";
 
 	DEFAULT_AXIOS_CONFIG: CreateAxiosDefaults = {
 		baseURL: `${this.API_URL}/`,

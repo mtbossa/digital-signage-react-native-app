@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from "react-native";
+import Constants from "expo-constants";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useStorage } from "intus-database/AsyncStorage/hooks/useStorage";
@@ -11,6 +12,8 @@ function Login() {
 
 	const { setIsAuth } = useContext(AppContext);
 	const { setItem } = useStorage();
+
+	const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 	const login = async (_: GestureResponderEvent) => {
 		try {
@@ -25,6 +28,7 @@ function Login() {
 	return (
 		<View style={style.container}>
 			<View style={style.loginCard}>
+				<Text style={[style.label, style.textWhite]}>API_URL: {API_URL}</Text>
 				<Text style={[style.label, style.textWhite]}>Insira o token recebido</Text>
 				<TextInput
 					style={[style.input, style.textWhite]}
