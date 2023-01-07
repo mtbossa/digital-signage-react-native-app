@@ -7,3 +7,12 @@ Right now, we can't reverse port **80**, so use port **8080**.
 
 We can either use default `http://localhost:8080`, which is set on `app.config.js` when no `process.env.API_URL` is found
 , or set a custom url `API_URL` on `.env` file. However, setting any values in `.env` file won't be applied on EAS build, meaning every time we build with EAS and a `APP_ENV` set as *`development`*, `API_URL` will be `http://localhost:8080`.
+
+## Don't forget
+
+We must not forget to set 
+```
+DEVELOPMENT_PUSHER_APP_KEY=
+DEVELOPMENT_PUSHER_APP_CLUSTER=
+```
+environment variables when developing.

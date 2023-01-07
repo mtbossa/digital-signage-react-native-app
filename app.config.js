@@ -1,9 +1,19 @@
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 dotenv.config();
 
+const getDevelopmentApiUrl = () => {
+	if (process.env.API_URL && process.env.API_URL !== "") {
+		// We need to check for empty string because .env could be like this: API_URL=
+		// and then apiUrl value would be an empty string.
+		return process.env.API_URL;
+	}
+
+	return "http://localhost:8080";
+}
+
 // Reference: https://docs.expo.dev/build-reference/variables/
 let Config = {
-	apiUrl: process.env.API_URL ?? "http://localhost:8080",
+	apiUrl: getDevelopmentApiUrl(),
 	pusherAppKey: process.env.DEVELOPMENT_PUSHER_APP_KEY,
 	pusherAppCluster: process.env.DEVELOPMENT_PUSHER_APP_CLUSTER,
 };
