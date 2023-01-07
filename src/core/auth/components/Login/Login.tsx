@@ -4,6 +4,7 @@ import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useStorage } from "intus-database/AsyncStorage/hooks/useStorage";
 import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
+import { IntusAPIClient } from "intus-api/IntusAPIClient";
 
 function Login() {
 	const [token, setToken] = useState("");
@@ -11,9 +12,10 @@ function Login() {
 	const { setIsAuth } = useContext(AppContext);
 	const { setItem } = useStorage();
 
-	const storeData = async (_: GestureResponderEvent) => {
+	const login = async (_: GestureResponderEvent) => {
 		try {
 			await setItem(StorageKeys.API_TOKEN, token);
+			IntusAPIClient.setApiToken(token);
 			setIsAuth(true);
 		} catch (e) {
 			console.log("Error while saving api token");
@@ -31,7 +33,7 @@ function Login() {
 					onChangeText={text => setToken(text)}
 				/>
 				<View style={style.loginButtonWrapper}>
-					<Button onPress={storeData} title="Login"></Button>
+					<Button onPress={login} title="Login"></Button>
 				</View>
 			</View>
 		</View>
