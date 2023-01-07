@@ -16,3 +16,6 @@ DEVELOPMENT_PUSHER_APP_KEY=
 DEVELOPMENT_PUSHER_APP_CLUSTER=
 ```
 environment variables when developing.
+
+## Common commands
+`adb -s <device-name> install myapp.apk` - Installs a local apk to selected device. USB Debugging must be enabled on device.
