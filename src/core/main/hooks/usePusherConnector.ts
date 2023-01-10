@@ -5,17 +5,15 @@ import { PostCreatedNotification } from "intus-api/websockets/notifications/Post
 import { PostDeletedNotification } from "intus-api/websockets/notifications/PostDeleted";
 import { PostUpdatedNotification } from "intus-api/websockets/notifications/PostUpdated";
 import { getCurrentDisplayChannelName } from "intus-api/websockets/PrivateChannels";
-import { database } from "intus-database/WatermelonDB";
+import { useStorage } from "intus-database/AsyncStorage/hooks/useStorage";
+import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import { createMedia } from "intus-database/WatermelonDB/models/Media/create/createMedia";
 import { destroyMedia } from "intus-database/WatermelonDB/models/Media/delete/destroyMedia";
-import { Media } from "intus-database/WatermelonDB/models/Media/Media";
 import { findMediaByMediaId } from "intus-database/WatermelonDB/models/Media/query/findMediaByMediaId";
 import { createPost } from "intus-database/WatermelonDB/models/Post/create/createPost";
 import { destroyPostByPostApiId } from "intus-database/WatermelonDB/models/Post/delete/destroyPost";
-import { Post } from "intus-database/WatermelonDB/models/Post/Post";
 import { findPostByPostId } from "intus-database/WatermelonDB/models/Post/query/findPostByPostId";
 import { updatePost } from "intus-database/WatermelonDB/models/Post/update/updatePost";
-import CarouselService from "../services/CarouselService";
 import { mediaDownloadHandler } from "../services/DownloadService";
 
 const handleAuthorization = async (channelName: string, socketId: string) => {
@@ -37,6 +35,8 @@ const handleAuthorization = async (channelName: string, socketId: string) => {
 };
 
 export const usePusherConnector = () => {
+	const { getItem } = useStorage();
+
 	const connect = async () => {
 		const apiKey = "67f6f5d1618646d3ea95";
 		const cluster = "sa1";
@@ -51,8 +51,16 @@ export const usePusherConnector = () => {
 				onAuthorizer: handleAuthorization,
 			});
 
+			const displayId = await getItem(StorageKeys.DISPLAY_ID);
+
+			if (!displayId) {
+				throw new Error("DISPLAY_ID is not set.");
+			}
+
+			const channelName = await getCurrentDisplayChannelName(displayId);
+
 			await pusher.subscribe({
-				channelName: getCurrentDisplayChannelName(),
+				channelName,
 				onEvent: handleEvent,
 				onSubscriptionSucceeded: data => {
 					console.log("onSubscriptionSucceeded");
@@ -123,7 +131,6 @@ export const usePusherConnector = () => {
 		const foundPost = await findPostByPostId(post.id);
 
 		if (foundMedia) {
-
 			if (foundPost) {
 				await updatePost(foundPost!, localPostData, foundMedia.id);
 			} else {
@@ -138,13 +145,12 @@ export const usePusherConnector = () => {
 				if (foundPost) {
 					await updatePost(foundPost!, localPostData, createdMedia.id);
 				} else {
-					await createPost(localPostData, createdMedia.id)
+					await createPost(localPostData, createdMedia.id);
 				}
 			} catch {
 				// TODO do something if cant download media
 			}
 		}
-
 	};
 
 	return {

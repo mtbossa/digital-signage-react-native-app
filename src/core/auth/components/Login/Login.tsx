@@ -84,8 +84,8 @@ function Login() {
 			await setItem(StorageKeys.DISPLAY_ID, String(display_id));
 
 			IntusAPIClient.setApiToken(api_token);
-			
-			setIsAuth(true);			
+
+			setIsAuth(true);
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
 				console.log(e);
