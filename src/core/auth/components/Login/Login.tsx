@@ -108,7 +108,7 @@ function Login() {
 			<Text style={[style.label, style.textWhite]}>API_URL: {API_URL}</Text>
 			<View style={style.loginCard}>
 				{isLoading && <Loading />}
-				{pairingCode && (
+				{pairingCode && timeLeft && (
 					<>
 						<Text style={[style.label, style.textWhite]}>Pairing code: {pairingCode}</Text>
 						<Text style={[style.label, style.textWhite]}>
