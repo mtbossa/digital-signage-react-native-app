@@ -12,6 +12,7 @@ module.exports = function (api) {
 						"intus-database": "./src/database",
 						"intus-styles": "./src/styles",
 						"intus-api": "./src/api",
+						"intus-messages": "./src/messages",
 					},
 				},
 			],

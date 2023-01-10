@@ -9,7 +9,8 @@
       "intus-contexts/*": ["src/core/shared/contexts/*"],
       "intus-database/*": ["./src/database/*"],
       "intus-styles/*": ["./src/styles/*"],
-      "intus-api/*": ["./src/api/*"]
+      "intus-api/*": ["./src/api/*"],
+      "intus-messages/*": ["./src/messages/*"]
     },
     "typeRoots": ["./src/types"],
   }

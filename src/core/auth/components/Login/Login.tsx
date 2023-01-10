@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
-import { Button, GestureResponderEvent, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useContext, useState, useEffect } from "react";
+import { Button, GestureResponderEvent, StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 
 import { AppContext } from "intus-core/shared/contexts/AppContext";
@@ -10,6 +10,7 @@ import { Loading } from "intus-core/shared/components/Loading";
 import { requestPairingCodeRequest } from "intus-api/requests/RequestPairingCodeRequest";
 import { getAPITokenRequest } from "intus-api/requests/GetApiTokenRequest";
 import axios from "axios";
+import { Messages } from "intus-messages/Messages";
 
 interface TimeLeft {
 	minutes: number;
@@ -17,7 +18,9 @@ interface TimeLeft {
 }
 
 function Login() {
-	const [token, setToken] = useState("");
+	const [warningMessage, setWarningMessage] = useState("");
+	const [isPairDisabled, setIsPairDisabled] = useState(true);
+	const [isRequestPairingCodeDisabled, setIsRequestPairingCodeDisabled] = useState(true);
 	const [pairingCode, setPairingCode] = useState<string | null>(null);
 	const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
 	const [timeLeftInterval, setTimeLeftInterval] = useState<NodeJS.Timer | null>(null);
@@ -29,20 +32,7 @@ function Login() {
 
 	useEffect(() => {
 		(async () => {
-			setIsLoading(true);
-			try {
-				const {
-					data: { code, expires_at },
-				} = await requestPairingCodeRequest();
-
-				setPairingCode(code);
-				startTimer(expires_at);
-
-				setIsLoading(false);
-			} catch (e) {
-				// TODO do something if can't make the request (enable button to refetch code)
-				console.error(e);
-			}
+			generatePairingCode();
 		})();
 	}, []);
 
@@ -57,6 +47,7 @@ function Login() {
 			secondsLeft -= 1;
 			if (secondsLeft <= 0) {
 				clearInterval(interval);
+				setIsRequestPairingCodeDisabled(false);
 			}
 			var minutes = Math.floor(secondsLeft / 60);
 			var seconds = secondsLeft - minutes * 60;
@@ -70,8 +61,9 @@ function Login() {
 		setTimeLeftInterval(interval);
 	};
 
-	const login = async (_: GestureResponderEvent) => {
+	const pair = async (_: GestureResponderEvent) => {
 		try {
+			setWarningMessage("");
 			if (!pairingCode) return;
 
 			const {
@@ -88,37 +80,84 @@ function Login() {
 			setIsAuth(true);
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
-				console.log(e);
-				if (e.code === "404") {
+				if (e.response?.status === 404) {
 					// Code doesn't exists anymore
-					// TODO enable refetch code button
-				}
-				if (e.code === "422") {
+					handlePairCodeNotFound();
+				} else if (e.response?.status === 422) {
 					// Display not created yet
-					// TODO disable login button for 5s and show message that display is not created yet
+					handleDisplayNotCreated();
+				} else {
+					setWarningMessage(Messages.TRY_AGAIN_LATER);
 				}
 			} else {
-				console.error(e);
+				setWarningMessage(Messages.TRY_AGAIN_LATER);
 			}
+		}
+	};
+
+	const handlePairCodeNotFound = () => {
+		setWarningMessage(Messages.GENERATE_NEW_PAIR_CODE);
+		setIsRequestPairingCodeDisabled(false);
+		setPairingCode(null);
+		setTimeLeft(null);
+		timeLeftInterval && clearInterval(timeLeftInterval);
+	};
+
+	const handleDisplayNotCreated = () => {
+		setIsPairDisabled(true);
+		setWarningMessage(Messages.DISPLAY_NOT_CREATED);
+		setTimeout(() => {
+			setIsPairDisabled(false);
+			setWarningMessage("");
+		}, 5000);
+	};
+
+	const generatePairingCode = async () => {
+		setIsLoading(true);
+		setWarningMessage("");
+		setIsRequestPairingCodeDisabled(true);
+
+		try {
+			const {
+				data: { code, expires_at },
+			} = await requestPairingCodeRequest();
+
+			setPairingCode(code);
+			startTimer(expires_at);
+		} catch (e) {
+			// TODO do something if can't make the request (enable button to refetch code)
+			setWarningMessage(Messages.TRY_AGAIN_LATER);
+			setIsRequestPairingCodeDisabled(false);
+		} finally {
+			setIsPairDisabled(false);
+			setIsLoading(false);
 		}
 	};
 
 	return (
 		<View style={style.container}>
 			<Text style={[style.label, style.textWhite]}>API_URL: {API_URL}</Text>
-			<View style={style.loginCard}>
+			<View style={style.pairCard}>
 				{isLoading && <Loading />}
 				{pairingCode && timeLeft && (
 					<>
-						<Text style={[style.label, style.textWhite]}>Pairing code: {pairingCode}</Text>
+						<Text style={[style.label, style.textWhite]}>Código de pareamento: {pairingCode}</Text>
 						<Text style={[style.label, style.textWhite]}>
-							Time left: {timeLeft?.minutes}:{timeLeft?.seconds}
+							Tempo restante: {timeLeft?.minutes}:{timeLeft?.seconds}
 						</Text>
-						<View style={style.loginButtonWrapper}>
-							<Button onPress={login} title="Login"></Button>
-						</View>
 					</>
 				)}
+				{warningMessage && <Text style={[style.label, style.textWhite]}>{warningMessage}</Text>}
+				<View style={style.pairButtonWrapper}>
+					<Button onPress={pair} disabled={isPairDisabled} title="Parear"></Button>
+				</View>
+				<View style={style.pairButtonWrapper}>
+					<Button
+						onPress={() => generatePairingCode()}
+						disabled={isRequestPairingCodeDisabled}
+						title="Gerar novo código"
+					></Button>
+				</View>
 			</View>
 		</View>
 	);
@@ -132,7 +171,7 @@ const style = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	loginCard: {
+	pairCard: {
 		borderWidth: 1,
 		borderColor: "blue",
 		width: "50%",
@@ -149,7 +188,7 @@ const style = StyleSheet.create({
 		borderRadius: 5,
 		padding: 5,
 	},
-	loginButtonWrapper: {
+	pairButtonWrapper: {
 		marginTop: 10,
 	},
 });
