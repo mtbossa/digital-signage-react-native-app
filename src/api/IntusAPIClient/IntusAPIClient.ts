@@ -36,6 +36,12 @@ class IntusAPIClient {
 	}
 
 	private createAuthenticatedAxiosInstance() {
+		console.log({
+			...this.DEFAULT_AXIOS_CONFIG,
+			headers: {
+				Authorization: `Bearer ${this.API_TOKEN}`,
+			},
+		});
 		this.authenticatedAxios = axios.create({
 			...this.DEFAULT_AXIOS_CONFIG,
 			headers: {

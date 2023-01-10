@@ -8,6 +8,8 @@ import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import { IntusAPIClient } from "intus-api/IntusAPIClient";
 import { Loading } from "intus-core/shared/components/Loading";
 import { requestPairingCodeRequest } from "intus-api/requests/RequestPairingCodeRequest";
+import { getAPITokenRequest } from "intus-api/requests/GetApiTokenRequest";
+import axios from "axios";
 
 interface TimeLeft {
 	minutes: number;
@@ -38,6 +40,7 @@ function Login() {
 
 				setIsLoading(false);
 			} catch (e) {
+				// TODO do something if can't make the request (enable button to refetch code)
 				console.error(e);
 			}
 		})();
@@ -69,12 +72,34 @@ function Login() {
 
 	const login = async (_: GestureResponderEvent) => {
 		try {
-			await setItem(StorageKeys.API_TOKEN, token);
-			IntusAPIClient.setApiToken(token);
-			setIsAuth(true);
+			if (!pairingCode) return;
+
+			const {
+				data: { api_token, display_id },
+			} = await getAPITokenRequest(pairingCode!);
+
 			timeLeftInterval && clearInterval(timeLeftInterval);
+
+			await setItem(StorageKeys.API_TOKEN, api_token);
+			await setItem(StorageKeys.DISPLAY_ID, String(display_id));
+
+			IntusAPIClient.setApiToken(api_token);
+			
+			setIsAuth(true);			
 		} catch (e) {
-			console.log("Error while saving api token");
+			if (axios.isAxiosError(e)) {
+				console.log(e);
+				if (e.code === "404") {
+					// Code doesn't exists anymore
+					// TODO enable refetch code button
+				}
+				if (e.code === "422") {
+					// Display not created yet
+					// TODO disable login button for 5s and show message that display is not created yet
+				}
+			} else {
+				console.error(e);
+			}
 		}
 	};
 

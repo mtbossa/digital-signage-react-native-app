@@ -10,6 +10,6 @@ export const displayPostsSyncRequest = async (currentStoredPostsIds: number[]) =
 	}
 
 	return await IntusAPIClient.authRequest.get<DisplayPostsSyncResponse>(
-		`api/display/1/posts/sync?${idsQuery}`
+		`api/display/posts/sync?${idsQuery}`
 	);
 };
