@@ -31,7 +31,6 @@ function Main() {
 
 	return (
 		<View style={style.container}>
-			{isLoading && <Loading />}
 			<View>{isAuth ? <Carousel /> : <Login />}</View>
 			<Button
 				onPress={async () => {
@@ -49,13 +48,6 @@ const style = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 		backgroundColor: colors.backgroundColor,
-	},
-	loader: {
-		position: "absolute",
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
 	},
 });
 
