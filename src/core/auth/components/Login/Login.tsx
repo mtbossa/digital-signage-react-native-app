@@ -9,7 +9,7 @@ import { IntusAPIClient } from "intus-api/IntusAPIClient";
 import { Loading } from "intus-core/shared/components/Loading";
 import { requestPairingCodeRequest } from "intus-api/requests/RequestPairingCodeRequest";
 import { getAPITokenRequest } from "intus-api/requests/GetApiTokenRequest";
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import { Messages } from "intus-messages/Messages";
 
 interface TimeLeft {
@@ -80,10 +80,10 @@ function Login() {
 			setIsAuth(true);
 		} catch (e) {
 			if (axios.isAxiosError(e)) {
-				if (e.response?.status === 404) {
+				if (e.response?.status === HttpStatusCode.NotFound) {
 					// Code doesn't exists anymore
 					handlePairCodeNotFound();
-				} else if (e.response?.status === 422) {
+				} else if (e.response?.status === HttpStatusCode.UnprocessableEntity) {
 					// Display not created yet
 					handleDisplayNotCreated();
 				} else {
