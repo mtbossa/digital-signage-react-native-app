@@ -125,7 +125,6 @@ function Login() {
 			setPairingCode(code);
 			startTimer(expires_at);
 		} catch (e) {
-			// TODO do something if can't make the request (enable button to refetch code)
 			setWarningMessage(Messages.TRY_AGAIN_LATER);
 			setIsRequestPairingCodeDisabled(false);
 		} finally {
