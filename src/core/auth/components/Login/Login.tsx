@@ -8,7 +8,7 @@ import { StorageKeys } from "intus-database/AsyncStorage/StorageKeys";
 import { IntusAPIClient } from "intus-api/IntusAPIClient";
 import { Loading } from "intus-core/shared/components/Loading";
 import { requestPairingCodeRequest } from "intus-api/requests/RequestPairingCodeRequest";
-import { getAPITokenRequest } from "intus-api/requests/GetApiTokenRequest";
+import { getAPITokenRequest } from "intus-api/requests/GetAPITokenRequest";
 import axios, { HttpStatusCode } from "axios";
 import { Messages } from "intus-messages/Messages";
 
@@ -29,6 +29,7 @@ function Login() {
 	const { setItem } = useStorage();
 
 	const API_URL = Constants.expoConfig?.extra?.apiUrl;
+	const APP_ENV = Constants.expoConfig?.extra?.appEnv;
 
 	useEffect(() => {
 		(async () => {
@@ -135,7 +136,9 @@ function Login() {
 
 	return (
 		<View style={style.container}>
-			<Text style={[style.label, style.textWhite]}>API_URL: {API_URL}</Text>
+			{APP_ENV === "development" && (
+				<Text style={[style.label, style.textWhite]}>API_URL: {API_URL}</Text>
+			)}
 			<View style={style.pairCard}>
 				{isLoading && <Loading />}
 				{pairingCode && timeLeft && (

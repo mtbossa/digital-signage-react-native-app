@@ -9,23 +9,26 @@ const getDevelopmentApiUrl = () => {
 	}
 
 	return "http://localhost:8080";
-}
+};
 
 // Reference: https://docs.expo.dev/build-reference/variables/
 let Config = {
 	apiUrl: getDevelopmentApiUrl(),
 	pusherAppKey: process.env.DEVELOPMENT_PUSHER_APP_KEY,
 	pusherAppCluster: process.env.DEVELOPMENT_PUSHER_APP_CLUSTER,
+	appEnv: "development",
 };
 
 if (process.env.APP_ENV === "production") {
 	Config.apiUrl = "https://mural.revendahost.inf.br";
 	Config.pusherAppCluster = process.env.PRODUCTION_PUSHER_APP_KEY;
 	Config.pusherAppKey = process.env.PRODUCTION_PUSHER_APP_CLUSTER;
+	Config.appEnv = "production";
 } else if (process.env.APP_ENV === "staging") {
 	Config.apiUrl = "https://mural.revendahost.inf.br";
 	Config.pusherAppCluster = process.env.STAGING_PUSHER_APP_KEY;
 	Config.pusherAppKey = process.env.STAGING_PUSHER_APP_CLUSTER;
+	Config.appEnv = "staging";
 }
 
 module.exports = {
