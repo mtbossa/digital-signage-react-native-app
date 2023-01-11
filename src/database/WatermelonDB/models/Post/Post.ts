@@ -4,7 +4,8 @@ import { Associations } from "@nozbe/watermelondb/Model";
 import { Media } from "../Media/Media";
 import { Q } from "@nozbe/watermelondb";
 
-interface Recurrence {
+export interface Recurrence {
+	id?: number;
 	day: number | null;
 	isoweekday: number | null;
 	month: number | null;
