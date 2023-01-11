@@ -4,7 +4,7 @@ import { Image, Text } from "react-native";
 import { AppContext } from "intus-core/shared/contexts/AppContext";
 import { useSync } from "intus-core/main/hooks/useSync";
 import { AVPlaybackStatus, Video, AVPlaybackStatusSuccess } from "expo-av";
-import { PostWithMedia } from "intus-database/WatermelonDB/models/Post/query/showablePostsWithMediaCustomQuery";
+import { PostWithMedia } from "intus-database/WatermelonDB/models/Post/query/allRecurrentPosts";
 import CarouselService from "intus-core/main/services/CarouselService";
 import { usePusherConnector } from "intus-core/main/hooks/usePusherConnector";
 
@@ -21,11 +21,11 @@ function Carousel() {
 	useEffect(() => {
 		(async () => {
 			setIsLoading(true);
-			
+
 			await sync();
 			connect();
 			CarouselService.startCarousel();
-			
+
 			setIsLoading(false);
 		})();
 	}, []);
@@ -61,7 +61,7 @@ function Carousel() {
 			if (!nextPost) return;
 
 			clearInterval(interval);
-			setShowingPost(nextPost);		
+			setShowingPost(nextPost);
 		}, 5000);
 	};
 

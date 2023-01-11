@@ -5,7 +5,7 @@ import { Media } from "../Media/Media";
 import { Q } from "@nozbe/watermelondb";
 
 export interface Recurrence {
-	id?: number;
+	id: number;
 	day: number | null;
 	isoweekday: number | null;
 	month: number | null;

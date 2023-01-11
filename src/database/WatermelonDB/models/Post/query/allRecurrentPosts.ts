@@ -1,16 +1,12 @@
 import { Q } from "@nozbe/watermelondb";
 import { database } from "intus-database/WatermelonDB";
 import { Recurrence } from "../Post";
+import { PostWithMedia } from "./showablePostsWithMediaCustomQuery";
 
-export interface RecurrentPostWithMedia {
-	id: string;
-	post_api_id: number;
+export interface RecurrentPostWithMedia extends PostWithMedia {
 	start_time: string;
 	end_time: string;
-	expose_time: number;
-	downloadedPath: string;
 	recurrence: string;
-	type: "video" | "image";
 }
 
 export const allRecurrentPostsQuery = async (): Promise<RecurrentPostWithMedia[]> => {
