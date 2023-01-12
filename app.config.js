@@ -33,8 +33,8 @@ if (process.env.APP_ENV === "production") {
 
 module.exports = {
 	expo: {
-		name: "expo-typescript",
-		slug: "expo-typescript",
+		name: "Intus Murais",
+		slug: "intus-murais",
 		version: "1.0.0",
 		orientation: "default",
 		icon: "./assets/icon.png",
@@ -42,7 +42,7 @@ module.exports = {
 		splash: {
 			image: "./assets/splash.png",
 			resizeMode: "contain",
-			backgroundColor: "#ffffff",
+			backgroundColor: "#000000",
 		},
 		updates: {
 			fallbackToCacheTimeout: 0,
@@ -63,7 +63,7 @@ module.exports = {
 				},
 			],
 			permissions: ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET"],
-			package: "com.mtbossa.expotypescript",
+			package: "com.intus.intusmurais",
 		},
 		web: {
 			favicon: "./assets/favicon.png",

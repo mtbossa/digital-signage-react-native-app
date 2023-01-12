@@ -1,4 +1,4 @@
-package com.mtbossa.expotypescript.newarchitecture;
+package com.intus.intusmurais.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.mtbossa.expotypescript.BuildConfig;
-import com.mtbossa.expotypescript.newarchitecture.components.MainComponentsRegistry;
-import com.mtbossa.expotypescript.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.intus.intusmurais.BuildConfig;
+import com.intus.intusmurais.newarchitecture.components.MainComponentsRegistry;
+import com.intus.intusmurais.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

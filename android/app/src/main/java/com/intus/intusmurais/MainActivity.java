@@ -1,4 +1,4 @@
-package com.mtbossa.expotypescript;
+package com.intus.intusmurais;
 
 import android.os.Build;
 import android.os.Bundle;
