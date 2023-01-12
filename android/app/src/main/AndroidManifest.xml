@@ -29,6 +29,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.mtbossa.expotypescript"/>
+        <data android:scheme="exp+expo-typescript"/>
       </intent-filter>
       <intent-filter data-generated="true">
         <action android:name="android.intent.action.MAIN"/>
